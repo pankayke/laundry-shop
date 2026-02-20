@@ -24,24 +24,38 @@ class Order extends Model
         'amount_paid',
         'change_amount',
         'notes',
+        'estimated_weight',
+        'requested_services',
+        'special_instructions',
+        'payment_reference',
     ];
 
     protected $casts = [
-        'total_weight' => 'decimal:2',
-        'total_price' => 'decimal:2',
-        'amount_paid' => 'decimal:2',
-        'change_amount' => 'decimal:2',
+        'total_weight'      => 'decimal:2',
+        'total_price'       => 'decimal:2',
+        'amount_paid'       => 'decimal:2',
+        'change_amount'     => 'decimal:2',
+        'estimated_weight'  => 'decimal:2',
+        'requested_services' => 'array',
     ];
 
     /** Ordered status progression used for dropdowns and timelines. */
     public const STATUSES = [
+        'pending_approval' => 'Pending Approval',
         'received'         => 'Received',
         'washing'          => 'Washing',
         'drying'           => 'Drying',
         'folding'          => 'Folding',
         'ready_for_pickup' => 'Ready for Pickup',
         'collected'        => 'Collected',
+        'cancelled'        => 'Cancelled',
     ];
+
+    /** Staff-managed statuses (excludes pending_approval, cancelled which are customer/system-managed). */
+    public static function staffStatuses(): array
+    {
+        return array_diff_key(self::STATUSES, array_flip(['pending_approval', 'cancelled']));
+    }
 
     public const PAYMENT_METHODS = [
         'cash'   => 'Cash',
@@ -97,5 +111,22 @@ class Order extends Model
     public function isReadyForPickup(): bool
     {
         return $this->status === 'ready_for_pickup';
+    }
+
+    public function isPendingApproval(): bool
+    {
+        return $this->status === 'pending_approval';
+    }
+
+    // ── Scopes ────────────────────────────────────────────────────
+
+    public function scopePendingApproval($query)
+    {
+        return $query->where('status', 'pending_approval');
+    }
+
+    public function scopeForCustomer($query, int $customerId)
+    {
+        return $query->where('customer_id', $customerId);
     }
 }

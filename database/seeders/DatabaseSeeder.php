@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Services\TicketNumberService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,52 +18,82 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 0. Permissions & Roles
+        $permissions = [
+            'orders.manage',
+            'orders.view',
+            'customers.view',
+            'customers.manage',
+            'reports.view',
+            'settings.manage',
+            'users.manage',
+        ];
+
+        foreach ($permissions as $perm) {
+            Permission::firstOrCreate(['name' => $perm]);
+        }
+
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $adminRole->syncPermissions($permissions);
+
+        $staffRole = Role::firstOrCreate(['name' => 'staff']);
+        $staffRole->syncPermissions(['orders.manage', 'customers.view']);
+
+        $customerRole = Role::firstOrCreate(['name' => 'customer']);
+        $customerRole->syncPermissions(['orders.view']);
+
         // 1. Settings
         $this->call(SettingSeeder::class);
 
         // 2. Admin
         $admin = User::create([
             'name'     => 'Admin User',
-            'email'    => 'admin@laundry.test',
+            'email'    => 'admin@gelowash.com',
             'phone'    => '09170000001',
             'password' => Hash::make('password'),
             'role'     => 'admin',
         ]);
+        $admin->assignRole('admin');
 
         // 3. Staff
         $staff1 = User::create([
             'name'     => 'Maria Santos',
-            'email'    => 'maria@laundry.test',
+            'email'    => 'staff@gelowash.com',
             'phone'    => '09170000002',
             'password' => Hash::make('password'),
             'role'     => 'staff',
         ]);
+        $staff1->assignRole('staff');
 
         $staff2 = User::create([
             'name'     => 'Juan Reyes',
-            'email'    => 'juan@laundry.test',
+            'email'    => 'juan@gelowash.com',
             'phone'    => '09170000003',
             'password' => Hash::make('password'),
             'role'     => 'staff',
         ]);
+        $staff2->assignRole('staff');
 
         // 4. Customers
         $customers = collect();
         $customerData = [
-            ['name' => 'Ana Cruz',      'phone' => '09181111111'],
-            ['name' => 'Ben Torres',    'phone' => '09182222222'],
-            ['name' => 'Carla Diaz',    'phone' => '09183333333'],
-            ['name' => 'Dennis Lim',    'phone' => '09184444444'],
-            ['name' => 'Elena Bautista','phone' => '09185555555'],
+            ['name' => 'Ana Cruz',       'phone' => '09181111111', 'email' => 'ana@example.com'],
+            ['name' => 'Ben Torres',     'phone' => '09182222222', 'email' => 'ben@example.com'],
+            ['name' => 'Carla Diaz',     'phone' => '09183333333', 'email' => 'carla@example.com'],
+            ['name' => 'Dennis Lim',     'phone' => '09184444444', 'email' => 'dennis@example.com'],
+            ['name' => 'Elena Bautista', 'phone' => '09185555555', 'email' => 'elena@example.com'],
         ];
 
         foreach ($customerData as $data) {
-            $customers->push(User::create([
+            $customer = User::create([
                 'name'     => $data['name'],
                 'phone'    => $data['phone'],
+                'email'    => $data['email'],
                 'password' => Hash::make('password'),
                 'role'     => 'customer',
-            ]));
+            ]);
+            $customer->assignRole('customer');
+            $customers->push($customer);
         }
 
         // 5. Orders (20 sample orders spread across last 30 days)
@@ -124,6 +156,47 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('Seeded: 1 admin, 2 staff, 5 customers, 20 orders');
+        // 6. Pending Approval Orders (customer-submitted requests)
+        $pendingServices = [
+            ['wash', 'dry', 'fold'],
+            ['wash', 'dry'],
+            ['wash'],
+            ['wash', 'fold'],
+            ['dry', 'fold'],
+        ];
+        $pendingInstructions = [
+            'Please handle with care, delicate fabrics.',
+            'Separate whites from colored clothes.',
+            null,
+            'Use fabric softener please.',
+            'Extra rinse cycle if possible.',
+        ];
+
+        for ($i = 0; $i < 5; $i++) {
+            $customer = $customers[$i];
+            $services = $pendingServices[$i];
+            $weight = round(rand(15, 80) / 10, 1);
+            $estimatedPrice = collect($services)->sum(fn($s) => $prices[$s]) * $weight;
+            $createdAt = now()->subHours(rand(1, 48));
+
+            Order::create([
+                'ticket_number'       => $ticketService->generate(),
+                'customer_id'         => $customer->id,
+                'staff_id'            => null,
+                'status'              => 'pending_approval',
+                'total_weight'        => 0,
+                'estimated_weight'    => $weight,
+                'total_price'         => round($estimatedPrice, 2),
+                'payment_status'      => 'unpaid',
+                'payment_method'      => 'gcash',
+                'payment_reference'   => 'GCASH' . str_pad(rand(100000, 999999), 6, '0'),
+                'requested_services'  => $services,
+                'special_instructions'=> $pendingInstructions[$i],
+                'created_at'          => $createdAt,
+                'updated_at'          => $createdAt,
+            ]);
+        }
+
+        $this->command->info('Seeded: 1 admin, 2 staff, 5 customers, 20 orders, 5 pending requests');
     }
 }

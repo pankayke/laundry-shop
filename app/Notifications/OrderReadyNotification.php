@@ -38,7 +38,7 @@ class OrderReadyNotification extends Notification implements ShouldQueue
         $settings = Setting::instance();
 
         return (new MailMessage)
-            ->subject('Your Laundry is Ready for Pickup!')
+            ->subject('GeloWash - Your Laundry is Ready for Pickup!')
             ->greeting("Hi {$notifiable->name}!")
             ->line("Your laundry order **{$this->order->ticket_number}** is ready for pickup!")
             ->line("Visit us at: {$settings->shop_address}")

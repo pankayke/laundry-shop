@@ -1,175 +1,180 @@
-@extends('layouts.app')
-@section('content')
-<div class="max-w-4xl mx-auto">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Create New Order</h1>
+@extends('layouts.admin')
 
-    <form method="POST" action="{{ route('staff.orders.store') }}" id="orderForm" class="space-y-6">
+@section('title', 'New Order – GeloWash')
+
+@section('content')
+<div class="max-w-4xl mx-auto space-y-6"
+     x-data="orderForm()"
+     x-init="init()">
+
+    {{-- Header --}}
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">New Order</h1>
+            <p class="text-gray-400 text-sm mt-1">Create a new laundry order</p>
+        </div>
+        <a href="{{ route('staff.dashboard') }}" class="text-sm text-gray-500 hover:text-sky-600 transition flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Back
+        </a>
+    </div>
+
+    <form method="POST" action="{{ route('staff.orders.store') }}" class="space-y-6">
         @csrf
 
         {{-- Customer Selection --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Customer</h2>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label for="phone_lookup" class="block text-sm font-medium text-gray-700 mb-1">Phone Lookup</label>
-                    <input type="tel" id="phone_lookup" placeholder="Enter phone to find customer"
-                        class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    <p id="lookup_result" class="mt-1 text-xs text-gray-500"></p>
-                </div>
-                <div>
-                    <label for="customer_id" class="block text-sm font-medium text-gray-700 mb-1">Select Customer</label>
-                    <select name="customer_id" id="customer_id" required
-                        class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="">-- Choose Customer --</option>
-                        @foreach ($customers as $customer)
-                            <option value="{{ $customer->id }}"
-                                {{ old('customer_id', isset($repeatOrder) ? $repeatOrder->customer_id : '') == $customer->id ? 'selected' : '' }}>
-                                {{ $customer->name }} ({{ $customer->phone }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+        <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6">
+            <h2 class="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0"/></svg>
+                Customer
+            </h2>
+            <select name="customer_id" required
+                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-300 focus:border-sky-400 outline-none transition bg-white/50 text-sm">
+                <option value="">Select customer...</option>
+                @foreach($customers as $customer)
+                    <option value="{{ $customer->id }}"
+                        {{ (old('customer_id') == $customer->id || (isset($repeatOrder) && $repeatOrder->customer_id == $customer->id)) ? 'selected' : '' }}>
+                        {{ $customer->name }} {{ $customer->phone ? "({$customer->phone})" : '' }}
+                    </option>
+                @endforeach
+            </select>
+            @error('customer_id')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Order Items --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-semibold text-gray-800">Items</h2>
-                <button type="button" onclick="addItem()"
-                    class="rounded-lg bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 transition">
-                    + Add Item
+                <h2 class="text-lg font-bold text-gray-700 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-sky-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="13" r="4"/><rect x="8" y="5" width="8" height="4" rx="2"/></svg>
+                    Laundry Items
+                </h2>
+                <button type="button" @click="addItem()"
+                        class="inline-flex items-center gap-1 bg-sky-100 text-sky-700 px-3 py-2 rounded-xl text-sm font-semibold hover:bg-sky-200 transition min-h-[40px]">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                    Add Item
                 </button>
             </div>
 
-            <div id="items-container">
-                {{-- Pre-filled from repeat order or default first row --}}
+            <div class="space-y-4">
+                <template x-for="(item, index) in items" :key="index">
+                    <div class="bg-sky-50/50 rounded-xl p-4 relative">
+                        <button type="button" @click="removeItem(index)" x-show="items.length > 1"
+                                class="absolute top-2 right-2 text-red-400 hover:text-red-600 p-1 rounded-lg hover:bg-red-50 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="text-xs text-gray-500 mb-1 block">Cloth Type</label>
+                                <input type="text" :name="'items['+index+'][cloth_type]'" x-model="item.cloth_type" required
+                                       class="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-300 focus:border-sky-400 outline-none transition text-sm bg-white"
+                                       placeholder="e.g., Shirts, Pants">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 mb-1 block">Weight (kg)</label>
+                                <input type="number" :name="'items['+index+'][weight]'" x-model="item.weight" step="0.1" min="0.1" required
+                                       @input="calculateTotal()"
+                                       class="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-300 focus:border-sky-400 outline-none transition text-sm bg-white"
+                                       placeholder="0.0">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 mb-1 block">Service</label>
+                                <select :name="'items['+index+'][service_type]'" x-model="item.service_type" required
+                                        @change="calculateTotal()"
+                                        class="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-300 focus:border-sky-400 outline-none transition text-sm bg-white">
+                                    <option value="wash">Wash – ₱{{ number_format($settings->wash_price, 2) }}/kg</option>
+                                    <option value="dry">Dry – ₱{{ number_format($settings->dry_price, 2) }}/kg</option>
+                                    <option value="fold">Fold – ₱{{ number_format($settings->fold_price, 2) }}/kg</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-2 text-right">
+                            <span class="text-xs text-gray-500">Subtotal: </span>
+                            <span class="text-sm font-bold text-sky-600" x-text="'₱' + getSubtotal(item).toFixed(2)"></span>
+                        </div>
+                    </div>
+                </template>
             </div>
 
-            <div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                <span class="text-sm text-gray-500">Total Weight: <strong id="totalWeight">0.00</strong> kg</span>
-                <span class="text-lg font-bold text-indigo-600">Total: ₱<span id="totalPrice">0.00</span></span>
+            {{-- Total --}}
+            <div class="mt-4 flex justify-end">
+                <div class="bg-gradient-to-r from-sky-500 to-sky-600 text-white px-6 py-3 rounded-xl shadow-lg">
+                    <span class="text-sm opacity-80">Estimated Total</span>
+                    <p class="text-xl font-bold" x-text="'₱' + total.toFixed(2)"></p>
+                </div>
             </div>
         </div>
 
         {{-- Notes --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
-            <textarea name="notes" id="notes" rows="2"
-                class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500"
-                placeholder="Special instructions...">{{ old('notes') }}</textarea>
+        <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6">
+            <h2 class="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                Notes (optional)
+            </h2>
+            <textarea name="notes" rows="3"
+                      class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-300 focus:border-sky-400 outline-none transition bg-white/50 text-sm resize-none"
+                      placeholder="Special instructions, preferred detergent, etc.">{{ old('notes') }}</textarea>
         </div>
 
-        <button type="submit"
-            class="w-full rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition">
-            Create Order
-        </button>
+        {{-- Submit --}}
+        <div class="flex gap-3">
+            <button type="submit"
+                    class="flex-1 bg-gradient-to-r from-sky-500 to-sky-600 text-white py-3 rounded-xl font-semibold hover:from-sky-600 hover:to-sky-700 transition shadow-lg shadow-sky-200 min-h-[44px] flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                Create Order
+            </button>
+            <a href="{{ route('staff.dashboard') }}"
+               class="px-6 py-3 rounded-xl font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition min-h-[44px] flex items-center">
+                Cancel
+            </a>
+        </div>
     </form>
 </div>
 
 @push('scripts')
 <script>
-    const PRICES = {
-        wash: {{ $settings->wash_price }},
-        dry:  {{ $settings->dry_price }},
-        fold: {{ $settings->fold_price }},
+function orderForm() {
+    return {
+        items: [],
+        total: 0,
+        prices: {
+            wash: {{ $settings->wash_price }},
+            dry: {{ $settings->dry_price }},
+            fold: {{ $settings->fold_price }},
+        },
+        init() {
+            @if(isset($repeatOrder) && $repeatOrder->items)
+                @foreach($repeatOrder->items as $item)
+                    this.items.push({
+                        cloth_type: '{{ $item->cloth_type }}',
+                        weight: {{ $item->weight }},
+                        service_type: '{{ $item->service_type }}',
+                    });
+                @endforeach
+            @else
+                this.items.push({ cloth_type: '', weight: '', service_type: 'wash' });
+            @endif
+            this.calculateTotal();
+        },
+        addItem() {
+            this.items.push({ cloth_type: '', weight: '', service_type: 'wash' });
+        },
+        removeItem(index) {
+            this.items.splice(index, 1);
+            this.calculateTotal();
+        },
+        getSubtotal(item) {
+            const weight = parseFloat(item.weight) || 0;
+            return weight * (this.prices[item.service_type] || 0);
+        },
+        calculateTotal() {
+            this.total = this.items.reduce((sum, item) => sum + this.getSubtotal(item), 0);
+        },
     };
-
-    let itemIndex = 0;
-
-    function addItem(clothType = '', weight = '', serviceType = 'wash') {
-        const container = document.getElementById('items-container');
-        const html = `
-        <div class="item-row grid grid-cols-1 sm:grid-cols-12 gap-3 mb-3 items-end" data-index="${itemIndex}">
-            <div class="sm:col-span-4">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Cloth Type</label>
-                <input type="text" name="items[${itemIndex}][cloth_type]" value="${clothType}" required placeholder="e.g. T-shirts, Jeans"
-                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-            </div>
-            <div class="sm:col-span-2">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Weight (kg)</label>
-                <input type="number" name="items[${itemIndex}][weight]" value="${weight}" required min="0.1" step="0.1"
-                    onchange="recalculate()" oninput="recalculate()" placeholder="0.0"
-                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 weight-input">
-            </div>
-            <div class="sm:col-span-3">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Service</label>
-                <select name="items[${itemIndex}][service_type]" onchange="recalculate()"
-                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 service-select">
-                    <option value="wash" ${serviceType === 'wash' ? 'selected' : ''}>Wash (₱${PRICES.wash}/kg)</option>
-                    <option value="dry" ${serviceType === 'dry' ? 'selected' : ''}>Dry (₱${PRICES.dry}/kg)</option>
-                    <option value="fold" ${serviceType === 'fold' ? 'selected' : ''}>Fold (₱${PRICES.fold}/kg)</option>
-                </select>
-            </div>
-            <div class="sm:col-span-2 text-right">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Subtotal</label>
-                <span class="item-subtotal text-sm font-semibold text-gray-900">₱0.00</span>
-            </div>
-            <div class="sm:col-span-1 text-right">
-                <button type="button" onclick="removeItem(this)" class="text-red-400 hover:text-red-600 text-lg" title="Remove">&times;</button>
-            </div>
-        </div>`;
-        container.insertAdjacentHTML('beforeend', html);
-        itemIndex++;
-        recalculate();
-    }
-
-    function removeItem(btn) {
-        btn.closest('.item-row').remove();
-        recalculate();
-    }
-
-    function recalculate() {
-        let totalWeight = 0, totalPrice = 0;
-        document.querySelectorAll('.item-row').forEach(row => {
-            const weight = parseFloat(row.querySelector('.weight-input')?.value) || 0;
-            const service = row.querySelector('.service-select')?.value || 'wash';
-            const price = PRICES[service] || 0;
-            const subtotal = weight * price;
-            totalWeight += weight;
-            totalPrice += subtotal;
-            const subtotalEl = row.querySelector('.item-subtotal');
-            if (subtotalEl) subtotalEl.textContent = '₱' + subtotal.toFixed(2);
-        });
-        document.getElementById('totalWeight').textContent = totalWeight.toFixed(2);
-        document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
-    }
-
-    // Customer phone lookup
-    const phoneLookup = document.getElementById('phone_lookup');
-    if (phoneLookup) {
-        let debounce;
-        phoneLookup.addEventListener('input', function() {
-            clearTimeout(debounce);
-            debounce = setTimeout(async () => {
-                const phone = this.value.trim();
-                if (phone.length < 4) return;
-                try {
-                    const res = await fetch(`{{ route('staff.api.customer.lookup') }}?phone=${encodeURIComponent(phone)}`);
-                    const data = await res.json();
-                    const result = document.getElementById('lookup_result');
-                    if (data.found) {
-                        result.textContent = `Found: ${data.customer.name}`;
-                        result.className = 'mt-1 text-xs text-green-600';
-                        document.getElementById('customer_id').value = data.customer.id;
-                    } else {
-                        result.textContent = 'No customer found with this phone.';
-                        result.className = 'mt-1 text-xs text-yellow-600';
-                    }
-                } catch (e) { /* silently fail */ }
-            }, 400);
-        });
-    }
-
-    // Initialize
-    @if (isset($repeatOrder) && $repeatOrder->items->count())
-        @foreach ($repeatOrder->items as $item)
-            addItem('{{ $item->cloth_type }}', '{{ $item->weight }}', '{{ $item->service_type }}');
-        @endforeach
-    @else
-        addItem();
-    @endif
+}
 </script>
 @endpush
 @endsection

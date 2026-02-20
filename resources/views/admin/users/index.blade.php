@@ -1,68 +1,98 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Users – GeloWash')
+
 @section('content')
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
-    <h1 class="text-2xl font-bold text-gray-900">Manage Users</h1>
-    <a href="{{ route('admin.users.create') }}"
-        class="inline-flex items-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition">
-        + New User
-    </a>
-</div>
+<div class="max-w-7xl mx-auto space-y-6">
+    {{-- Header --}}
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Users</h1>
+            <p class="text-gray-400 text-sm mt-1">Manage staff and customer accounts</p>
+        </div>
+        <a href="{{ route('admin.users.create') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:from-sky-600 hover:to-sky-700 transition shadow-lg shadow-sky-200 min-h-[44px]">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+            Add User
+        </a>
+    </div>
 
-{{-- Filters --}}
-<form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-col sm:flex-row gap-3 mb-6">
-    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search name, phone, or email"
-        class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-    <select name="role" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-        <option value="">All Roles</option>
-        <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-        <option value="staff" {{ request('role') === 'staff' ? 'selected' : '' }}>Staff</option>
-        <option value="customer" {{ request('role') === 'customer' ? 'selected' : '' }}>Customer</option>
-    </select>
-    <button type="submit"
-        class="rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition">
-        Filter
-    </button>
-</form>
+    {{-- Search --}}
+    <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6">
+        <form method="GET" action="{{ route('admin.users.index') }}" class="flex gap-3">
+            <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name, email, or phone"
+                       class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-300 focus:border-sky-400 outline-none transition bg-white/50 text-sm">
+            </div>
+            <button type="submit" class="bg-gradient-to-r from-sky-500 to-sky-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-sky-600 hover:to-sky-700 transition shadow-lg shadow-sky-200 min-h-[44px]">
+                Search
+            </button>
+        </form>
+    </div>
 
-{{-- Users Table --}}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
-                    <th class="px-4 py-3">Name</th>
-                    <th class="px-4 py-3">Phone</th>
-                    <th class="px-4 py-3">Email</th>
-                    <th class="px-4 py-3">Role</th>
-                    <th class="px-4 py-3">Joined</th>
-                    <th class="px-4 py-3 text-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                @forelse ($users as $user)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium text-gray-900">{{ $user->name }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $user->phone ?? '—' }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $user->email ?? '—' }}</td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-                                {{ $user->isAdmin() ? 'bg-purple-100 text-purple-700' : ($user->isStaff() ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700') }}">
-                                {{ ucfirst($user->role) }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-xs text-gray-500">{{ $user->created_at->format('M d, Y') }}</td>
-                        <td class="px-4 py-3 text-right">
-                            <a href="{{ route('admin.users.edit', $user) }}"
-                                class="text-indigo-600 hover:text-indigo-800 text-xs font-medium">Edit</a>
-                        </td>
+    {{-- Users Table --}}
+    <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-gray-50/80 border-b border-gray-100">
+                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Name</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Email</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Phone</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Role</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Joined</th>
+                        <th class="px-4 py-3 text-center font-semibold text-gray-600">Actions</th>
                     </tr>
-                @empty
-                    <tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">No users found.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($users as $user)
+                        <tr class="hover:bg-sky-50/50 transition">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-sky-500 flex items-center justify-center text-white font-bold text-sm">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </div>
+                                    <span class="font-semibold text-gray-700">{{ $user->name }}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-gray-500">{{ $user->email }}</td>
+                            <td class="px-4 py-3 text-gray-500">{{ $user->phone ?? '—' }}</td>
+                            <td class="px-4 py-3">
+                                @php
+                                    $roleColors = [
+                                        'admin'    => 'bg-red-100 text-red-700',
+                                        'staff'    => 'bg-sky-100 text-sky-700',
+                                        'customer' => 'bg-green-100 text-green-700',
+                                    ];
+                                @endphp
+                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $roleColors[$user->role] ?? 'bg-gray-100 text-gray-600' }}">
+                                    {{ ucfirst($user->role) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-500">{{ $user->created_at->format('M d, Y') }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center gap-1 text-sky-600 hover:text-sky-700 font-medium text-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-400">No users found</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($users->hasPages())
+            <div class="px-4 py-3 border-t border-gray-100">
+                {{ $users->links() }}
+            </div>
+        @endif
     </div>
 </div>
-
-<div class="mt-4">{{ $users->links() }}</div>
 @endsection

@@ -18,15 +18,26 @@ class SettingController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'shop_name'    => ['required', 'string', 'max:255'],
-            'shop_address' => ['required', 'string', 'max:500'],
-            'shop_phone'   => ['required', 'string', 'max:20'],
-            'wash_price'   => ['required', 'numeric', 'min:0'],
-            'dry_price'    => ['required', 'numeric', 'min:0'],
-            'fold_price'   => ['required', 'numeric', 'min:0'],
+            'shop_name'            => ['required', 'string', 'max:255'],
+            'shop_address'         => ['required', 'string', 'max:500'],
+            'shop_phone'           => ['required', 'string', 'max:20'],
+            'wash_price'           => ['required', 'numeric', 'min:0'],
+            'dry_price'            => ['required', 'numeric', 'min:0'],
+            'fold_price'           => ['required', 'numeric', 'min:0'],
+            'gcash_number'         => ['required', 'string', 'max:20'],
+            'payment_instructions' => ['nullable', 'string', 'max:500'],
+            'qr_code'              => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
         ]);
 
         $settings = Setting::instance();
+
+        // Handle QR code upload
+        if ($request->hasFile('qr_code')) {
+            $path = $request->file('qr_code')->store('images', 'public');
+            $validated['qr_code_path'] = '/storage/' . $path;
+        }
+
+        unset($validated['qr_code']);
         $settings->update($validated);
         Setting::clearCache();
 

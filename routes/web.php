@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', fn () => view('welcome'))->name('home');
 
 Route::get('/track/{ticket?}', [Customer\OrderTrackingController::class, 'track'])
+    ->middleware('throttle:30,1')
     ->name('track.order');
 
 /*
@@ -28,10 +29,10 @@ Route::get('/track/{ticket?}', [Customer\OrderTrackingController::class, 'track'
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
-    Route::post('/register', [RegisterController::class, 'store']);
+    Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:5,1');
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
-    Route::post('/login', [LoginController::class, 'store']);
+    Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:5,1');
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])
@@ -46,6 +47,8 @@ Route::post('/logout', [LoginController::class, 'destroy'])
 
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
     Route::get('/dashboard', [Customer\DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/orders/request', [Customer\OrderRequestController::class, 'store'])->name('orders.request');
+    Route::patch('/orders/{order}/cancel', [Customer\OrderController::class, 'cancel'])->name('orders.cancel');
 });
 
 /*
@@ -64,6 +67,7 @@ Route::middleware(['auth', 'role:staff,admin'])->prefix('staff')->name('staff.')
     Route::patch('/orders/{order}/status', [Staff\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::patch('/orders/{order}/payment', [Staff\OrderController::class, 'updatePayment'])->name('orders.updatePayment');
     Route::get('/orders/{order}/repeat', [Staff\OrderController::class, 'repeat'])->name('orders.repeat');
+    Route::patch('/orders/{order}/approve', [Staff\OrderController::class, 'approve'])->name('orders.approve');
 
     // AJAX
     Route::get('/api/customer-lookup', [CustomerLookupController::class, 'lookup'])->name('api.customer.lookup');

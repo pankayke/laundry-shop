@@ -1,104 +1,117 @@
 @extends('layouts.app')
+
+@section('title', 'Track Order – GeloWash')
+
 @section('content')
-<div class="max-w-2xl mx-auto">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6 text-center">Track Your Order</h1>
+<div class="max-w-3xl mx-auto space-y-6">
+    {{-- Header --}}
+    <div class="text-center">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <svg class="inline-block w-8 h-8 text-sky-500 mr-1 -mt-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            Track Your Order
+        </h1>
+        <p class="text-gray-400 mt-1 text-sm">Enter your ticket number (e.g., GW-2026-0001)</p>
+    </div>
 
-    {{-- Search form --}}
-    <form method="GET" action="{{ route('track.order') }}" class="flex gap-3 mb-8">
-        <input type="text" name="ticket" value="{{ $searchTicket ?? '' }}" required
-            class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            placeholder="Ticket number, phone number, or name">
-        <button type="submit"
-            class="rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition">
-            Track
-        </button>
-    </form>
-
-    @if ($searchTicket && !$order && $orders->isEmpty())
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center text-sm text-yellow-800">
-            No order found for <strong>{{ $searchTicket }}</strong>. Please check and try again.
-        </div>
-    @endif
-
-    {{-- Multiple results (phone/name search) --}}
-    @if ($orders->isNotEmpty())
-        <div class="mb-6">
-            <p class="text-sm text-gray-600 mb-3">Found <strong>{{ $orders->count() }}</strong> orders matching <strong>{{ $searchTicket }}</strong>:</p>
-            <div class="space-y-3">
-                @foreach ($orders as $o)
-                    <a href="{{ route('track.order', ['ticket' => $o->ticket_number]) }}"
-                       class="block bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:border-indigo-300 transition">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <span class="font-bold text-indigo-600">{{ $o->ticket_number }}</span>
-                                @include('components.status-badge', ['status' => $o->status])
-                            </div>
-                            <span class="text-sm text-gray-500">{{ $o->created_at->format('M d, Y') }}</span>
-                        </div>
-                        <div class="mt-2 text-sm text-gray-600">
-                            {{ $o->customer->name }} &middot; {{ $o->total_weight }}kg &middot;
-                            <span class="font-medium">₱{{ number_format($o->total_price, 2) }}</span>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
-    @if ($order)
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                <div>
-                    <span class="text-xl font-bold text-indigo-600">{{ $order->ticket_number }}</span>
-                    @include('components.status-badge', ['status' => $order->status])
+    {{-- Search Form --}}
+    <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6">
+        <form method="GET" action="{{ route('track.order') }}" class="flex gap-3">
+            <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
                 </div>
-                <span class="text-sm text-gray-500">{{ $order->created_at->format('M d, Y h:i A') }}</span>
+                <input type="text" name="ticket" value="{{ $searchTicket ?? '' }}" placeholder="GW-2026-XXXX"
+                       class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-300 focus:border-sky-400 outline-none transition bg-white/50 text-sm font-mono"
+                       autofocus>
+            </div>
+            <button type="submit" class="bg-gradient-to-r from-sky-500 to-sky-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-sky-600 hover:to-sky-700 transition shadow-lg shadow-sky-200 min-h-[44px] whitespace-nowrap">
+                Track
+            </button>
+        </form>
+    </div>
+
+    {{-- Single Order Result --}}
+    @if(isset($order) && $order)
+        <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6 space-y-5">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-lg font-bold text-sky-600 font-mono">{{ $order->ticket_number }}</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Placed {{ $order->created_at->format('M d, Y – g:i A') }}</p>
+                </div>
+                @include('components.status-badge', ['status' => $order->status])
             </div>
 
             {{-- Timeline --}}
-            <div class="mb-6">
-                @include('components.status-timeline', ['currentStep' => $order->status_step])
+            <div class="pt-4 pb-2">
+                @include('components.status-timeline', ['currentStatus' => $order->status])
             </div>
 
-            {{-- Details --}}
-            <div class="grid grid-cols-2 gap-4 text-sm mb-6">
+            {{-- Details Grid --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm pt-4 border-t border-gray-100">
                 <div>
-                    <span class="text-gray-500">Customer</span>
-                    <p class="font-medium text-gray-900">{{ $order->customer->name }}</p>
+                    <span class="text-gray-400 text-xs block">Customer</span>
+                    <p class="font-semibold text-gray-700">{{ $order->customer->name ?? 'Walk-in' }}</p>
                 </div>
                 <div>
-                    <span class="text-gray-500">Total Weight</span>
-                    <p class="font-medium text-gray-900">{{ $order->total_weight }} kg</p>
+                    <span class="text-gray-400 text-xs block">Weight</span>
+                    <p class="font-semibold text-gray-700">{{ number_format($order->total_weight, 2) }} kg</p>
                 </div>
                 <div>
-                    <span class="text-gray-500">Total Price</span>
-                    <p class="font-bold text-indigo-600">₱{{ number_format($order->total_price, 2) }}</p>
+                    <span class="text-gray-400 text-xs block">Total</span>
+                    <p class="font-semibold text-gray-700">₱{{ number_format($order->total_price, 2) }}</p>
                 </div>
                 <div>
-                    <span class="text-gray-500">Payment</span>
-                    <p class="font-medium {{ $order->isPaid() ? 'text-green-600' : 'text-red-500' }}">
-                        {{ $order->isPaid() ? 'Paid (' . $order->payment_method_label . ')' : 'Unpaid' }}
+                    <span class="text-gray-400 text-xs block">Payment</span>
+                    <p class="font-semibold {{ $order->payment_status === 'paid' ? 'text-green-600' : 'text-amber-600' }}">
+                        {{ ucfirst($order->payment_status) }}
+                        @if($order->payment_method && $order->payment_method !== 'unpaid')
+                            ({{ ucfirst($order->payment_method) }})
+                        @endif
                     </p>
                 </div>
             </div>
 
-            {{-- Items --}}
-            @if ($order->items->count())
-                <div class="border-t border-gray-100 pt-4">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Items</h3>
-                    <div class="space-y-2">
-                        @foreach ($order->items as $item)
-                            <div class="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-2 text-sm">
-                                <div>
-                                    <span class="font-medium text-gray-900">{{ $item->cloth_type }}</span>
-                                    <span class="text-gray-500">· {{ $item->weight }}kg · {{ $item->service_type_label }}</span>
-                                </div>
-                                <span class="font-medium text-gray-900">₱{{ number_format($item->subtotal, 2) }}</span>
-                            </div>
-                        @endforeach
-                    </div>
+            @if($order->notes)
+                <div class="bg-sky-50 rounded-xl px-4 py-3 text-sm text-gray-600">
+                    <span class="font-semibold text-sky-600 text-xs block mb-1">Notes</span>
+                    {{ $order->notes }}
                 </div>
             @endif
+        </div>
+    @endif
+
+    {{-- No result message --}}
+    @if(isset($searchTicket) && $searchTicket && (!isset($order) || !$order) && (!isset($orders) || $orders->isEmpty()))
+        <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-8 text-center">
+            <svg class="w-16 h-16 mx-auto text-gray-300 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                <path d="M10 10l4 4m0-4l-4 4" stroke-width="2"/>
+            </svg>
+            <p class="text-gray-500 font-medium">No order found for "{{ $searchTicket }}"</p>
+            <p class="text-gray-400 text-sm mt-1">Please check the ticket number and try again</p>
+        </div>
+    @endif
+
+    {{-- Multiple results (partial match) --}}
+    @if(isset($orders) && $orders->count() > 0)
+        <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <h3 class="font-semibold text-gray-700">Matching Orders ({{ $orders->count() }})</h3>
+            </div>
+            <div class="divide-y divide-gray-100">
+                @foreach($orders as $o)
+                    <a href="{{ route('track.order', $o->ticket_number) }}" class="flex items-center justify-between px-6 py-4 hover:bg-sky-50/50 transition">
+                        <div>
+                            <span class="font-mono font-bold text-sky-600 text-sm">{{ $o->ticket_number }}</span>
+                            <span class="text-xs text-gray-400 ml-2">{{ $o->created_at->format('M d, Y') }}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            @include('components.status-badge', ['status' => $o->status])
+                            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
         </div>
     @endif
 </div>

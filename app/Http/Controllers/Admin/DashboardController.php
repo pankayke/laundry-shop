@@ -12,23 +12,37 @@ class DashboardController extends Controller
     {
         $today = now()->startOfDay();
 
-        $paidToday = Order::whereDate('created_at', $today)->where('payment_status', 'paid');
-        $paidAll   = Order::where('payment_status', 'paid');
+        // Single aggregate query for today's stats
+        $todayAgg = Order::whereDate('created_at', $today)
+            ->selectRaw("COUNT(*) as total_orders")
+            ->selectRaw("SUM(CASE WHEN payment_status = 'paid' THEN total_price ELSE 0 END) as revenue")
+            ->selectRaw("SUM(CASE WHEN payment_status = 'paid' AND payment_method = 'cash'  THEN total_price ELSE 0 END) as cash")
+            ->selectRaw("SUM(CASE WHEN payment_status = 'paid' AND payment_method = 'gcash' THEN total_price ELSE 0 END) as gcash")
+            ->selectRaw("SUM(CASE WHEN payment_status = 'paid' AND payment_method = 'maya'  THEN total_price ELSE 0 END) as maya")
+            ->first();
+
+        // Single aggregate query for all-time stats
+        $allAgg = Order::query()
+            ->selectRaw("COUNT(*) as total_orders")
+            ->selectRaw("SUM(CASE WHEN payment_status = 'paid' THEN total_price ELSE 0 END) as revenue")
+            ->selectRaw("SUM(CASE WHEN payment_status = 'paid' AND payment_method = 'cash'  THEN total_price ELSE 0 END) as cash")
+            ->selectRaw("SUM(CASE WHEN payment_status = 'paid' AND payment_method = 'gcash' THEN total_price ELSE 0 END) as gcash")
+            ->selectRaw("SUM(CASE WHEN payment_status = 'paid' AND payment_method = 'maya'  THEN total_price ELSE 0 END) as maya")
+            ->first();
 
         $stats = [
-            'total_orders_today'  => Order::whereDate('created_at', $today)->count(),
-            'total_revenue_today' => (clone $paidToday)->sum('total_price'),
+            'total_orders_today'  => $todayAgg->total_orders,
+            'total_revenue_today' => $todayAgg->revenue ?? 0,
             'total_customers'     => User::where('role', 'customer')->count(),
             'pending_orders'      => Order::whereNotIn('status', ['collected'])->count(),
-            'cash_today'          => (clone $paidToday)->where('payment_method', 'cash')->sum('total_price'),
-            'gcash_today'         => (clone $paidToday)->where('payment_method', 'gcash')->sum('total_price'),
-            'maya_today'          => (clone $paidToday)->where('payment_method', 'maya')->sum('total_price'),
-            // Overall
-            'total_orders'        => Order::count(),
-            'total_revenue'       => (clone $paidAll)->sum('total_price'),
-            'cash_all'            => (clone $paidAll)->where('payment_method', 'cash')->sum('total_price'),
-            'gcash_all'           => (clone $paidAll)->where('payment_method', 'gcash')->sum('total_price'),
-            'maya_all'            => (clone $paidAll)->where('payment_method', 'maya')->sum('total_price'),
+            'cash_today'          => $todayAgg->cash ?? 0,
+            'gcash_today'         => $todayAgg->gcash ?? 0,
+            'maya_today'          => $todayAgg->maya ?? 0,
+            'total_orders'        => $allAgg->total_orders,
+            'total_revenue'       => $allAgg->revenue ?? 0,
+            'cash_all'            => $allAgg->cash ?? 0,
+            'gcash_all'           => $allAgg->gcash ?? 0,
+            'maya_all'            => $allAgg->maya ?? 0,
         ];
 
         $recentOrders = Order::with('customer')

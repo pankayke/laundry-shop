@@ -1,0 +1,25 @@
+{
+    "name": "GeloWash Laundry Shop",
+    "short_name": "GeloWash",
+    "description": "GeloWash Laundry Shop Management System — track orders, manage payments, and more.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f9fafb",
+    "theme_color": "#87CEEB",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["business", "utilities"]
+}

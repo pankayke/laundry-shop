@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('staff_id')->nullable()->constrained('users')->nullOnDelete();
             $table->enum('status', [
-                'received', 'washing', 'drying', 'folding', 'ready_for_pickup', 'collected',
+                'pending_approval', 'received', 'washing', 'drying', 'folding', 'ready_for_pickup', 'collected', 'cancelled',
             ])->default('received');
             $table->decimal('total_weight', 8, 2)->default(0);
             $table->decimal('total_price', 10, 2)->default(0);

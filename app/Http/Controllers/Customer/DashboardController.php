@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -11,19 +12,21 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        $currentOrders = $user->orders()
-            ->whereNotIn('status', ['collected'])
+        $activeOrders = $user->orders()
+            ->whereNotIn('status', ['collected', 'cancelled'])
             ->with('items')
             ->orderByDesc('created_at')
             ->get();
 
-        $orderHistory = $user->orders()
-            ->where('status', 'collected')
+        $pastOrders = $user->orders()
+            ->whereIn('status', ['collected', 'cancelled'])
             ->with('items')
             ->orderByDesc('created_at')
             ->limit(10)
             ->get();
 
-        return view('customer.dashboard', compact('currentOrders', 'orderHistory'));
+        $settings = Setting::instance();
+
+        return view('customer.dashboard', compact('activeOrders', 'pastOrders', 'settings'));
     }
 }

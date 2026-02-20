@@ -20,8 +20,10 @@ class RegisterController extends Controller
     {
         $validated = $request->validate([
             'name'     => ['required', 'string', 'max:255'],
-            'phone'    => ['required', 'string', 'max:20', 'unique:users,phone'],
+            'phone'    => ['required', 'string', 'regex:/^(09|\+639)\d{9}$/', 'max:20', 'unique:users,phone'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'phone.regex' => 'Please enter a valid Philippine mobile number (e.g. 09171234567).',
         ]);
 
         $user = User::create([

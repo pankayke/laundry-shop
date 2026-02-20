@@ -14,6 +14,9 @@ class Setting extends Model
         'wash_price',
         'dry_price',
         'fold_price',
+        'gcash_number',
+        'qr_code_path',
+        'payment_instructions',
     ];
 
     protected $casts = [
@@ -27,12 +30,14 @@ class Setting extends Model
     {
         return Cache::remember('app_settings', 3600, function () {
             return self::first() ?? self::create([
-                'shop_name'    => 'My Laundry Shop',
-                'shop_address' => '123 Main Street, Manila',
-                'shop_phone'   => '09171234567',
-                'wash_price'   => 25.00,
-                'dry_price'    => 15.00,
-                'fold_price'   => 10.00,
+                'shop_name'            => 'GeloWash Laundry Shop',
+                'shop_address'         => 'Purok 3, Brgy. San Isidro, General Santos City',
+                'shop_phone'           => '0960-720-4055',
+                'wash_price'           => 25.00,
+                'dry_price'            => 15.00,
+                'fold_price'           => 10.00,
+                'gcash_number'         => '09925247231',
+                'payment_instructions' => 'Scan QR or send payment to the number above, then enter your reference number below.',
             ]);
         });
     }

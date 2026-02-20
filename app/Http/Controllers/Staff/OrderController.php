@@ -7,6 +7,7 @@ use App\Jobs\SendOrderReadyNotification;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\User;
+use App\Notifications\OrderApprovedNotification;
 use App\Services\TicketNumberService;
 use Illuminate\Http\Request;
 
@@ -85,7 +86,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:' . implode(',', array_keys(Order::STATUSES))],
+            'status' => ['required', 'in:' . implode(',', array_keys(Order::staffStatuses()))],
         ]);
 
         $oldStatus = $order->status;
@@ -152,5 +153,36 @@ class OrderController extends Controller
             'customers'   => $customers,
             'repeatOrder' => $order,
         ]);
+    }
+
+    /** Approve a pending customer laundry request. */
+    public function approve(Order $order)
+    {
+        if ($order->status !== 'pending_approval') {
+            return back()->with('error', 'This order is not pending approval.');
+        }
+
+        // Recalculate price using current settings in case pricing changed
+        $settings       = Setting::instance();
+        $weight         = (float) ($order->estimated_weight ?: $order->total_weight);
+        $services       = $order->requested_services ?? ['wash'];
+        $recalculated   = 0;
+
+        foreach ($services as $service) {
+            $recalculated += $settings->getPriceForService($service) * $weight;
+        }
+
+        $order->update([
+            'status'      => 'received',
+            'staff_id'    => auth()->id(),
+            'total_price' => round($recalculated, 2),
+        ]);
+
+        // Notify the customer
+        if ($order->customer) {
+            $order->customer->notify(new OrderApprovedNotification($order));
+        }
+
+        return back()->with('success', "Request {$order->ticket_number} approved!");
     }
 }
