@@ -1,0 +1,51 @@
+# =============================================================
+# Render Blueprint - Infrastructure as Code
+# =============================================================
+# Deploy: Connect this repo on Render Dashboard, it auto-detects
+# this file and sets up the service.
+#
+# Docs: https://docs.render.com/blueprint-spec
+# =============================================================
+
+services:
+  - type: web
+    name: gelowash-laundry-shop
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    repo: https://github.com/pankayke/laundry-shop
+    branch: main
+    plan: free
+    healthCheckPath: /up
+    envVars:
+      - key: APP_NAME
+        value: GeloWash
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        fromService:
+          type: web
+          name: gelowash-laundry-shop
+          property: host
+          # Render provides the URL; prefix with https://
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /var/www/html/database/database.sqlite
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: MAIL_MAILER
+        value: log
+      - key: DB_SEED
+        value: true
+    disk:
+      name: gelowash-data
+      mountPath: /var/www/html/database
+      sizeGB: 1

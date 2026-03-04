@@ -1,0 +1,45 @@
+# =============================================================
+# Docker Compose for local development
+# =============================================================
+# Usage:
+#   docker compose up --build        (start all services)
+#   docker compose down               (stop all services)
+#   docker compose exec app bash      (shell into container)
+# =============================================================
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gelowash-app
+    ports:
+      - "8080:8080"
+    environment:
+      APP_NAME: "GeloWash"
+      APP_ENV: local
+      APP_DEBUG: true
+      APP_URL: http://localhost:8080
+      APP_KEY: "" # Auto-generated on first run
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /var/www/html/database/database.sqlite
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      MAIL_MAILER: log
+      DB_SEED: true
+    volumes:
+      # Persist SQLite database across restarts
+      - db-data:/var/www/html/database
+      # Persist storage (uploaded files, logs)
+      - storage-data:/var/www/html/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  db-data:
+  storage-data:

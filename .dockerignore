@@ -1,0 +1,44 @@
+# =============================================================
+# Docker ignore - exclude files not needed in the image
+# =============================================================
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# IDE / Editor
+.idea
+.vscode
+*.swp
+*.swo
+
+# Documentation
+CODEBASE_OVERVIEW.md
+INSTALL.md
+README.md
+
+# Node (built in Docker)
+node_modules
+
+# Testing
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Development tools
+.env
+.env.local
+.env.*.local
+docker-compose.yml
+docker-compose.override.yml
+
+# Laravel development
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# OS files
+.DS_Store
+Thumbs.db
