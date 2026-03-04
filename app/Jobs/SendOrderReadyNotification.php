@@ -23,6 +23,11 @@ class SendOrderReadyNotification implements ShouldQueue
     public function handle(): void
     {
         $this->order->load('customer');
+
+        if (! $this->order->customer) {
+            return;
+        }
+
         $this->order->customer->notify(new OrderReadyNotification($this->order));
     }
 }

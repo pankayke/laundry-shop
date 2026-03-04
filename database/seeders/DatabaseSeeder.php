@@ -46,33 +46,39 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingSeeder::class);
 
         // 2. Admin
-        $admin = User::create([
-            'name'     => 'Admin User',
-            'email'    => 'admin@gelowash.com',
-            'phone'    => '09170000001',
-            'password' => Hash::make('password'),
-            'role'     => 'admin',
-        ]);
-        $admin->assignRole('admin');
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@gelowash.com'],
+            [
+                'name'     => 'Admin User',
+                'phone'    => '09170000001',
+                'password' => Hash::make('password'),
+                'role'     => 'admin',
+            ]
+        );
+        $admin->syncRoles(['admin']);
 
         // 3. Staff
-        $staff1 = User::create([
-            'name'     => 'Maria Santos',
-            'email'    => 'staff@gelowash.com',
-            'phone'    => '09170000002',
-            'password' => Hash::make('password'),
-            'role'     => 'staff',
-        ]);
-        $staff1->assignRole('staff');
+        $staff1 = User::firstOrCreate(
+            ['email' => 'staff@gelowash.com'],
+            [
+                'name'     => 'Maria Santos',
+                'phone'    => '09170000002',
+                'password' => Hash::make('password'),
+                'role'     => 'staff',
+            ]
+        );
+        $staff1->syncRoles(['staff']);
 
-        $staff2 = User::create([
-            'name'     => 'Juan Reyes',
-            'email'    => 'juan@gelowash.com',
-            'phone'    => '09170000003',
-            'password' => Hash::make('password'),
-            'role'     => 'staff',
-        ]);
-        $staff2->assignRole('staff');
+        $staff2 = User::firstOrCreate(
+            ['email' => 'juan@gelowash.com'],
+            [
+                'name'     => 'Juan Reyes',
+                'phone'    => '09170000003',
+                'password' => Hash::make('password'),
+                'role'     => 'staff',
+            ]
+        );
+        $staff2->syncRoles(['staff']);
 
         // 4. Customers
         $customers = collect();
@@ -85,14 +91,16 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($customerData as $data) {
-            $customer = User::create([
-                'name'     => $data['name'],
-                'phone'    => $data['phone'],
-                'email'    => $data['email'],
-                'password' => Hash::make('password'),
-                'role'     => 'customer',
-            ]);
-            $customer->assignRole('customer');
+            $customer = User::firstOrCreate(
+                ['phone' => $data['phone']],
+                [
+                    'name'     => $data['name'],
+                    'email'    => $data['email'],
+                    'password' => Hash::make('password'),
+                    'role'     => 'customer',
+                ]
+            );
+            $customer->syncRoles(['customer']);
             $customers->push($customer);
         }
 

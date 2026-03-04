@@ -27,7 +27,7 @@ class StatsOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
 
-            Stat::make('Pending Orders', Order::whereNotIn('status', ['collected'])->count())
+            Stat::make('Pending Orders', Order::whereNotIn('status', ['collected', 'cancelled'])->count())
                 ->description('Not yet collected')
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),

@@ -22,7 +22,6 @@ class TicketNumberService
             $lastOrder = Order::withTrashed()
                 ->where('ticket_number', 'like', $prefix . '%')
                 ->orderByDesc('ticket_number')
-                ->lockForUpdate()
                 ->first();
 
             $nextNumber = $lastOrder
@@ -30,6 +29,6 @@ class TicketNumberService
                 : 1;
 
             return $prefix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
-        });
+        }, 5); // Retry up to 5 times on deadlock/conflict
     }
 }

@@ -33,6 +33,8 @@ class RegisterController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        $user->assignRole('customer');
+
         Auth::login($user);
 
         return redirect()->route('customer.dashboard');

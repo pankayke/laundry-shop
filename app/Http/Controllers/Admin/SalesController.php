@@ -94,8 +94,8 @@ class SalesController extends Controller
                 ->each(function (Order $order) use ($file) {
                     fputcsv($file, [
                         $order->ticket_number,
-                        $order->customer->name ?? 'Walk-in',
-                        $order->customer->phone ?? '',
+                        $order->customer?->name ?? 'Walk-in',
+                        $order->customer?->phone ?? '',
                         $order->status_label,
                         $order->total_price,
                         $order->payment_method_label,

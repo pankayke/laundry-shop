@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
@@ -33,6 +34,10 @@ class SettingController extends Controller
 
         // Handle QR code upload
         if ($request->hasFile('qr_code')) {
+            // Delete old QR code if exists
+            if ($settings->qr_code_path) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $settings->qr_code_path));
+            }
             $path = $request->file('qr_code')->store('images', 'public');
             $validated['qr_code_path'] = '/storage/' . $path;
         }

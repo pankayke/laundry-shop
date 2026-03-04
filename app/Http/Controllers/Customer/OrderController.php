@@ -28,7 +28,7 @@ class OrderController extends Controller
         if ($order->staff) {
             $order->staff->notify(new OrderCancelledNotification($order));
         } else {
-            User::role('staff')->get()->each(fn (User $staff) => $staff->notify(new OrderCancelledNotification($order)));
+            User::where('role', 'staff')->get()->each(fn (User $staff) => $staff->notify(new OrderCancelledNotification($order)));
         }
 
         if ($request->expectsJson()) {

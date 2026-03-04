@@ -34,7 +34,7 @@ class DashboardController extends Controller
             'total_orders_today'  => $todayAgg->total_orders,
             'total_revenue_today' => $todayAgg->revenue ?? 0,
             'total_customers'     => User::where('role', 'customer')->count(),
-            'pending_orders'      => Order::whereNotIn('status', ['collected'])->count(),
+            'pending_orders'      => Order::whereNotIn('status', ['collected', 'cancelled'])->count(),
             'cash_today'          => $todayAgg->cash ?? 0,
             'gcash_today'         => $todayAgg->gcash ?? 0,
             'maya_today'          => $todayAgg->maya ?? 0,

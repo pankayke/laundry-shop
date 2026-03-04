@@ -45,13 +45,15 @@ class UserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        User::create([
+        $user = User::create([
             'name'     => $validated['name'],
             'email'    => $validated['email'],
             'phone'    => $validated['phone'] ?? null,
             'role'     => $validated['role'],
             'password' => Hash::make($validated['password']),
         ]);
+
+        $user->syncRoles([$validated['role']]);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User created successfully.');
@@ -84,6 +86,7 @@ class UserController extends Controller
         }
 
         $user->update($data);
+        $user->syncRoles([$validated['role']]);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully.');
