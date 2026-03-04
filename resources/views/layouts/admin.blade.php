@@ -26,7 +26,7 @@
 
     {{-- Brand --}}
     <div class="h-16 px-6 flex items-center gap-3 border-b border-white/30 shrink-0">
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 group">
+        <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('staff.dashboard') }}" class="flex items-center gap-3 group">
             <div class="w-10 h-10 bg-gradient-to-br from-[#87CEEB] to-[#FFD700] rounded-2xl flex items-center justify-center shadow-lg shadow-sky-200/40 transition-transform group-hover:scale-105">
                 <svg viewBox="0 0 24 24" class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="14" r="7"/><circle cx="12" cy="14" r="3"/>
@@ -38,7 +38,7 @@
                 <h1 class="text-lg font-black tracking-tight leading-tight">
                     <span class="bg-gradient-to-r from-[#87CEEB] to-[#4682B4] bg-clip-text text-transparent italic">Gelo</span><span class="bg-gradient-to-r from-[#4682B4] to-[#FFD700] bg-clip-text text-transparent">Wash</span>
                 </h1>
-                <p class="text-[9px] text-[#4682B4]/60 font-semibold tracking-widest uppercase -mt-0.5">Admin Panel</p>
+                <p class="text-[9px] text-[#4682B4]/60 font-semibold tracking-widest uppercase -mt-0.5">{{ auth()->user()->isAdmin() ? 'Admin Panel' : 'Staff Panel' }}</p>
             </div>
         </a>
         {{-- Close button (mobile only) --}}
@@ -53,6 +53,7 @@
         {{-- MAIN --}}
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">Main</p>
 
+        @if(auth()->user()->isAdmin())
         <a href="{{ route('admin.dashboard') }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
                   {{ request()->routeIs('admin.dashboard') ? 'bg-sky-100/80 text-[#4682B4] font-semibold shadow-sm' : 'text-gray-500 hover:bg-white/60 hover:text-gray-700' }}">
@@ -63,6 +64,7 @@
             </div>
             Dashboard
         </a>
+        @endif
 
         <a href="{{ route('staff.dashboard') }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
@@ -111,7 +113,8 @@
             Track Order
         </a>
 
-        {{-- MANAGEMENT --}}
+        {{-- MANAGEMENT (Admin only) --}}
+        @if(auth()->user()->isAdmin())
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mt-5 mb-2">Management</p>
 
         <a href="{{ route('admin.users.index') }}"
@@ -147,6 +150,7 @@
             </div>
             Settings
         </a>
+        @endif
     </nav>
 
     {{-- User Card --}}

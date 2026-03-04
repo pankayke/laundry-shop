@@ -93,6 +93,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/users', [Admin\UserController::class, 'store'])->name('users.store');
     Route::get('/users/{user}/edit', [Admin\UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [Admin\UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [Admin\UserController::class, 'destroy'])->name('users.destroy');
 
     // Settings
     Route::get('/settings', [Admin\SettingController::class, 'edit'])->name('settings');

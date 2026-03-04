@@ -29,7 +29,7 @@
             </a>
 
             @auth
-                @if(Auth::user()->hasRole('customer'))
+                @if(Auth::user()->isCustomer())
                     <a href="{{ route('customer.dashboard') }}"
                        class="px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
                               {{ request()->routeIs('customer.dashboard') ? 'text-[#4682B4] bg-[#87CEEB]/15 font-semibold' : 'text-gray-500 hover:text-[#4682B4] hover:bg-[#87CEEB]/10' }}">
@@ -37,8 +37,8 @@
                     </a>
                 @endif
 
-                @if(Auth::user()->hasRole('staff') || Auth::user()->hasRole('admin'))
-                    <a href="{{ Auth::user()->hasRole('admin') ? '/admin' : '/staff' }}"
+                @if(Auth::user()->isStaff() || Auth::user()->isAdmin())
+                    <a href="{{ Auth::user()->isAdmin() ? route('admin.dashboard') : route('staff.dashboard') }}"
                        class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-[#4682B4] hover:bg-[#87CEEB]/10 rounded-xl transition-all duration-200">
                         Panel
                     </a>
@@ -69,7 +69,14 @@
         {{-- Mobile: minimal right-side items --}}
         <div class="sm:hidden flex items-center gap-2">
             @auth
-                <a href="{{ route('customer.dashboard') }}" class="p-2 text-[#4682B4] rounded-xl hover:bg-[#87CEEB]/10 transition">
+                @php
+                    $mobileHomeRoute = match(Auth::user()->role) {
+                        'admin' => route('admin.dashboard'),
+                        'staff' => route('staff.dashboard'),
+                        default => route('customer.dashboard'),
+                    };
+                @endphp
+                <a href="{{ $mobileHomeRoute }}" class="p-2 text-[#4682B4] rounded-xl hover:bg-[#87CEEB]/10 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
