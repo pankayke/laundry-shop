@@ -26,7 +26,8 @@ RUN composer install \
     --no-interaction \
     --no-scripts \
     --prefer-dist \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --ignore-platform-reqs
 
 COPY . .
 RUN composer dump-autoload --optimize
@@ -47,6 +48,8 @@ RUN apk add --no-cache \
     freetype-dev \
     libzip-dev \
     oniguruma-dev \
+    icu-dev \
+    icu-libs \
     curl \
     bash
 
@@ -60,7 +63,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     zip \
     bcmath \
     opcache \
-    pcntl
+    pcntl \
+    intl
 
 # Configure PHP for production
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
