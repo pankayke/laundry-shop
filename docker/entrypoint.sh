@@ -5,6 +5,14 @@ echo "==> Starting GeloWash Laundry Shop..."
 
 cd /var/www/html
 
+# Create .env file from environment variables if it doesn't exist
+if [ ! -f ".env" ]; then
+    echo "==> Creating .env file from environment variables..."
+    env | grep -E '^(APP_|DB_|MAIL_|QUEUE_|CACHE_|SESSION_|REDIS_|LOG_|BROADCAST_|FILESYSTEM_|VITE_|BCRYPT_)' | sort > .env
+    # Ensure APP_KEY line exists (even if empty) so key:generate can write to it
+    grep -q '^APP_KEY=' .env || echo 'APP_KEY=' >> .env
+fi
+
 # Create SQLite database if using SQLite and it doesn't exist
 if [ "${DB_CONNECTION}" = "sqlite" ]; then
     DB_PATH="${DB_DATABASE:-database/database.sqlite}"
