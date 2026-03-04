@@ -5,17 +5,9 @@ echo "==> Starting GeloWash Laundry Shop..."
 
 cd /var/www/html
 
-# Always create .env from .env.example as a base template.
-# Render injects env vars into the OS environment, which Laravel reads
-# on top of .env values. The file just needs to exist for artisan commands.
+# Always create .env — Render injects env vars into the OS environment,
+# but artisan commands need a .env file to exist.
 echo "==> Preparing .env file..."
-if [ -f ".env.example" ]; then
-    cp .env.example .env
-else
-    touch .env
-fi
-
-# Write Render's environment variables into .env so artisan can read them
 {
     echo "APP_NAME=\"${APP_NAME:-GeloWash}\""
     echo "APP_ENV=${APP_ENV:-production}"
@@ -33,6 +25,9 @@ fi
     echo "LOG_STACK=${LOG_STACK:-single}"
     echo "FILESYSTEM_DISK=${FILESYSTEM_DISK:-local}"
 } > .env
+
+cat .env
+echo "==> .env created with above values."
 
 # Create SQLite database if using SQLite and it doesn't exist
 if [ "${DB_CONNECTION}" = "sqlite" ]; then
@@ -54,21 +49,32 @@ else
     php artisan key:generate --force
 fi
 
-# Clear and cache config for production
-echo "==> Caching configuration..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+# Clear any stale caches before migrating
+echo "==> Clearing caches..."
+php artisan config:clear
+php artisan cache:clear 2>/dev/null || true
 
-# Run database migrations
+# Run database migrations FIRST (before caching)
 echo "==> Running migrations..."
 php artisan migrate --force
+echo "==> Migrations complete."
 
 # Seed database if requested
 if [ "${DB_SEED:-false}" = "true" ]; then
     echo "==> Seeding database..."
-    php artisan db:seed --force
+    php artisan db:seed --force --verbose
+    echo "==> Seeding complete."
+
+    # Verify users were created
+    USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null || echo "unknown")
+    echo "==> Users in database: $USER_COUNT"
 fi
+
+# NOW cache config/routes/views for production performance (after DB is ready)
+echo "==> Caching configuration..."
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
 # Create storage symlink
 echo "==> Linking storage..."
