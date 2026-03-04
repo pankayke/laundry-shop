@@ -59,15 +59,17 @@ echo "==> Running migrations..."
 php artisan migrate --force
 echo "==> Migrations complete."
 
-# Seed database if requested
-if [ "${DB_SEED:-false}" = "true" ]; then
-    echo "==> Seeding database..."
-    php artisan db:seed --force --verbose
-    echo "==> Seeding complete."
+# Auto-seed if database is empty (no users exist), or if DB_SEED=true
+USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null || echo "0")
+echo "==> Users in database: $USER_COUNT"
 
-    # Verify users were created
+if [ "$USER_COUNT" = "0" ] || [ "${DB_SEED:-false}" = "true" ]; then
+    echo "==> Seeding database (empty or DB_SEED=true)..."
+    php artisan db:seed --force --verbose
     USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null || echo "unknown")
-    echo "==> Users in database: $USER_COUNT"
+    echo "==> Users after seeding: $USER_COUNT"
+else
+    echo "==> Database already has users, skipping seed."
 fi
 
 # NOW cache config/routes/views for production performance (after DB is ready)
