@@ -5,12 +5,6 @@
  */
 use App\Models\Order;
 
-// Exclude non-progression statuses from the timeline
-$excludeFromTimeline = ['cancelled'];
-$steps = array_values(array_filter(array_keys(Order::STATUSES), fn($s) => !in_array($s, $excludeFromTimeline)));
-$currentIdx = array_search($currentStatus, $steps);
-if ($currentIdx === false) $currentIdx = -1;
-
 $stepMeta = [
     'pending_approval' => ['label' => 'Pending',    'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
     'received'         => ['label' => 'Received',   'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
@@ -20,6 +14,36 @@ $stepMeta = [
     'ready_for_pickup' => ['label' => 'Ready',      'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
     'collected'        => ['label' => 'Collected',  'icon' => 'M5 13l4 4L19 7'],
 ];
+
+// Build robust status aliases from both status keys and labels.
+$statusAliases = [];
+foreach (Order::STATUSES as $statusKey => $statusLabel) {
+    $normalizedKey = strtolower((string) $statusKey);
+    $normalizedLabel = strtolower((string) $statusLabel);
+    $statusAliases[$normalizedKey] = $normalizedKey;
+    $statusAliases[$normalizedLabel] = $normalizedKey;
+}
+
+// Fallback aliases for legacy or mixed-case data.
+$statusAliases['pending approval'] = 'pending_approval';
+$statusAliases['ready for pickup'] = 'ready_for_pickup';
+
+$rawStatus = strtolower(trim((string) ($currentStatus ?? '')));
+$normalizedStatus = str_replace(['-', ' '], '_', $rawStatus);
+
+$currentStatusKey = $statusAliases[$rawStatus]
+    ?? $statusAliases[str_replace('_', ' ', $normalizedStatus)]
+    ?? $statusAliases[$normalizedStatus]
+    ?? $normalizedStatus;
+
+// Exclude non-progression statuses from the timeline.
+$excludeFromTimeline = ['cancelled'];
+$steps = array_values(array_filter(array_keys($stepMeta), fn($s) => !in_array($s, $excludeFromTimeline, true)));
+
+$currentIdx = array_search($currentStatusKey, $steps, true);
+if ($currentIdx === false) {
+    $currentIdx = -1;
+}
 @endphp
 
 <div class="w-full overflow-x-auto">

@@ -5,11 +5,6 @@
  */
 use App\Models\Order;
 
-$excludeFromTimeline = ['cancelled'];
-$steps = array_values(array_filter(array_keys(Order::STATUSES), fn($s) => !in_array($s, $excludeFromTimeline)));
-$currentIdx = array_search($currentStatus, $steps);
-if ($currentIdx === false) $currentIdx = -1;
-
 $stepLabels = [
     'pending_approval' => 'Pending',
     'received'         => 'Received',
@@ -19,6 +14,34 @@ $stepLabels = [
     'ready_for_pickup' => 'Ready',
     'collected'        => 'Done',
 ];
+
+// Build robust status aliases from both status keys and labels.
+$statusAliases = [];
+foreach (Order::STATUSES as $statusKey => $statusLabel) {
+    $normalizedKey = strtolower((string) $statusKey);
+    $normalizedLabel = strtolower((string) $statusLabel);
+    $statusAliases[$normalizedKey] = $normalizedKey;
+    $statusAliases[$normalizedLabel] = $normalizedKey;
+}
+
+// Fallback aliases for legacy or mixed-case data.
+$statusAliases['pending approval'] = 'pending_approval';
+$statusAliases['ready for pickup'] = 'ready_for_pickup';
+
+$rawStatus = strtolower(trim((string) ($currentStatus ?? '')));
+$normalizedStatus = str_replace(['-', ' '], '_', $rawStatus);
+
+$currentStatusKey = $statusAliases[$rawStatus]
+    ?? $statusAliases[str_replace('_', ' ', $normalizedStatus)]
+    ?? $statusAliases[$normalizedStatus]
+    ?? $normalizedStatus;
+
+$excludeFromTimeline = ['cancelled'];
+$steps = array_values(array_filter(array_keys($stepLabels), fn($s) => !in_array($s, $excludeFromTimeline, true)));
+$currentIdx = array_search($currentStatusKey, $steps, true);
+if ($currentIdx === false) {
+    $currentIdx = -1;
+}
 @endphp
 
 <div class="flex items-center gap-0.5 w-full">
