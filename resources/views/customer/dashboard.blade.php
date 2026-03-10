@@ -62,7 +62,8 @@
             Dashboard
         </a>
 
-        <a href="{{ route('customer.dashboard') }}"
+        <a href="{{ route('customer.dashboard') }}#my-orders"
+           @click.prevent="scrollToOrders()"
            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-500 hover:bg-white/40 hover:text-[#4682B4] transition-all duration-200">
             <div class="w-8 h-8 rounded-xl bg-gray-100/60 flex items-center justify-center">
                 <svg class="w-[18px] h-[18px] text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -313,7 +314,7 @@
         </section>
 
         {{-- Active Orders Grid (3-column) --}}
-        <section>
+        <section id="my-orders" x-ref="desktopOrdersSection" class="scroll-mt-24">
             <div class="flex items-center justify-between mb-5">
                 <h3 class="text-lg font-bold text-[#4682B4] flex items-center gap-2">
                     <svg class="w-5 h-5 text-[#87CEEB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
@@ -519,6 +520,12 @@
         <p class="text-[11px] text-gray-400 truncate">{{ Auth::user()->email }}</p>
     </div>
     <div class="py-1.5">
+        <a href="{{ route('customer.dashboard') }}#my-orders"
+           @click.prevent="scrollToOrders(); showMobileMenu = false"
+           class="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 active:bg-gray-50 transition-colors min-h-12">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            My Orders
+        </a>
         <a href="{{ route('track.order') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 active:bg-gray-50 transition-colors min-h-12">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             Track Order
@@ -583,6 +590,8 @@
             </button>
         </div>
     @else
+        <div x-ref="mobileOrdersSection" class="scroll-mt-[140px]"></div>
+
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-base font-bold text-slate-700">Active Orders</h2>
             <span class="text-xs font-bold text-[#87CEEB] bg-[#87CEEB]/10 px-2.5 py-1 rounded-full">{{ $activeOrders->count() }}</span>
@@ -888,17 +897,28 @@ function customerDashboard() {
             reference: '',
             instructions: '',
         },
-        prices: {
-            wash: {{ (float) $settings->wash_price }},
-            dry:  {{ (float) $settings->dry_price }},
-            fold: {{ (float) $settings->fold_price }},
-        },
+        prices: @js([
+            'wash' => (float) $settings->wash_price,
+            'dry' => (float) $settings->dry_price,
+            'fold' => (float) $settings->fold_price,
+        ]),
         get estimatedPrice() {
             if (!this.form.weight || this.form.services.length === 0) return 0;
             let total = 0;
             const w = parseFloat(this.form.weight) || 0;
             this.form.services.forEach(svc => { total += (this.prices[svc] || 0) * w; });
             return total;
+        },
+        scrollToOrders() {
+            const target = window.innerWidth >= 1024
+                ? this.$refs.desktopOrdersSection
+                : this.$refs.mobileOrdersSection;
+
+            if (!target) {
+                return;
+            }
+
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     };
 }
