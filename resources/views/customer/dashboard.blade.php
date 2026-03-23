@@ -122,7 +122,7 @@
 </aside>
 
 {{-- ── A2: Desktop Control Center Header ──────────────────────────── --}}
-<header class="fixed top-0 left-64 xl:right-80 right-0 h-16 bg-white/60 backdrop-blur-xl border-b border-white/50 z-30 shadow-sm hidden lg:block">
+<header class="fixed top-0 left-64 lg:right-80 right-0 h-16 bg-white/60 backdrop-blur-xl border-b border-white/50 z-30 shadow-sm hidden lg:block">
     <div class="h-full px-8 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-gradient-to-br from-[#87CEEB] to-sky-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg shadow-sky-200/30 shrink-0">
@@ -148,11 +148,11 @@
     </div>
 </header>
 
-<div class="hidden lg:flex lg:ml-64 lg:items-start pt-16 min-h-screen">
+<div class="hidden lg:flex lg:ml-64 lg:mr-80 lg:items-start pt-16 min-h-screen">
 
-{{-- ── A3: Desktop Right Utility Pane (w-80, sticky on xl+) ───────── --}}
-<aside class="hidden xl:block w-80 shrink-0 p-5 order-last" aria-label="Utility pane">
-    <div class="space-y-5 xl:sticky xl:top-20 xl:self-start xl:max-h-[calc(100vh-5rem)] xl:overflow-y-auto xl:z-10">
+{{-- ── A3: Desktop Right Utility Pane (w-80, sticky on lg+) ───────── --}}
+<aside class="hidden lg:block w-80 shrink-0 p-5 order-last" aria-label="Utility pane">
+    <div class="space-y-5 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:z-10">
 
     {{-- Shop Details --}}
     <div class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-5">
