@@ -148,9 +148,11 @@
     </div>
 </header>
 
-{{-- ── A3: Desktop Right Utility Pane (w-80) ─────────────────────── --}}
-<div class="fixed right-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white/40 backdrop-blur-xl border-l border-white/50 z-30 hidden xl:flex flex-col overflow-y-auto p-5 gap-5"
-     aria-label="Utility pane">
+<div class="hidden lg:flex lg:ml-64 lg:items-start pt-16 min-h-screen">
+
+{{-- ── A3: Desktop Right Utility Pane (w-80, sticky on xl+) ───────── --}}
+<aside class="hidden xl:block w-80 shrink-0 p-5 order-last" aria-label="Utility pane">
+    <div class="space-y-5 xl:sticky xl:top-20 xl:self-start xl:max-h-[calc(100vh-5rem)] xl:overflow-y-auto xl:z-10">
 
     {{-- Shop Details --}}
     <div class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-5">
@@ -239,9 +241,10 @@
         </div>
     </div>
 </div>
+</aside>
 
 {{-- ── A4: Desktop Main Content (lg:ml-64 xl:mr-80) ──────────────── --}}
-<main class="hidden lg:block lg:ml-64 xl:mr-80 pt-16 min-h-screen">
+<main class="hidden lg:block flex-1 min-w-0">
     <div class="p-8 space-y-8">
 
         {{-- Flash Messages (desktop) --}}
@@ -458,6 +461,7 @@
 
     </div>
 </main>
+</div>
 
 
 {{-- ╔══════════════════════════════════════════════════════════════════╗
