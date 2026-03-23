@@ -62,7 +62,7 @@
             Dashboard
         </a>
 
-        <a href="{{ route('customer.dashboard') }}#my-orders"
+        <a href="#my-orders"
            @click.prevent="scrollToOrders()"
            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-500 hover:bg-white/40 hover:text-[#4682B4] transition-all duration-200">
             <div class="w-8 h-8 rounded-xl bg-gray-100/60 flex items-center justify-center">
@@ -914,15 +914,21 @@ function customerDashboard() {
             return total;
         },
         scrollToOrders() {
+            // Try refs first (Alpine approach)
             const target = window.innerWidth >= 1024
                 ? this.$refs.desktopOrdersSection
                 : this.$refs.mobileOrdersSection;
 
-            if (!target) {
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 return;
             }
 
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Fallback: use native ID-based scroll
+            const element = document.getElementById('my-orders');
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
     };
 }
