@@ -22,10 +22,10 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: false
+        value: "false"
       - key: APP_KEY
-        value: ""
-        # Left empty — entrypoint auto-generates a valid Laravel base64 key
+        sync: false
+        # Set once in Render dashboard (must start with base64:). Keep stable across deploys.
       - key: APP_URL
         fromService:
           type: web
@@ -35,7 +35,7 @@ services:
       - key: DB_CONNECTION
         value: sqlite
       - key: DB_DATABASE
-        value: /var/www/html/database/database.sqlite
+        value: /var/data/database.sqlite
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
@@ -45,8 +45,8 @@ services:
       - key: MAIL_MAILER
         value: log
       - key: DB_SEED
-        value: true
+        value: "false"
     disk:
       name: gelowash-data
-      mountPath: /var/www/html/database
+      mountPath: /var/data
       sizeGB: 1

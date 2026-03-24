@@ -98,6 +98,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Settings
     Route::get('/settings', [Admin\SettingController::class, 'edit'])->name('settings');
     Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update');
+
+    // Deployment diagnostics (admin only)
+    Route::get('/runtime-check', Admin\RuntimeCheckController::class)->name('runtimeCheck');
 });
 
 /*

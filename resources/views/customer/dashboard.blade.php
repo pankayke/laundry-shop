@@ -71,8 +71,8 @@
                 </svg>
             </div>
             My Orders
-            @if($activeOrders->count())
-                <span class="ml-auto text-[10px] font-bold bg-[#87CEEB]/20 text-[#4682B4] px-2 py-0.5 rounded-full">{{ $activeOrders->count() }}</span>
+            @if($orderCounts['active'])
+                <span class="ml-auto text-[10px] font-bold bg-[#87CEEB]/20 text-[#4682B4] px-2 py-0.5 rounded-full">{{ $orderCounts['active'] }}</span>
             @endif
         </a>
 
@@ -276,7 +276,7 @@
                 <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-5 flex items-start justify-between group hover:shadow-2xl hover:border-[#87CEEB]/30 transition-all duration-300">
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Active</p>
-                        <p class="text-3xl font-black text-[#87CEEB] mt-1 leading-none">{{ $activeOrders->count() }}</p>
+                        <p class="text-3xl font-black text-[#87CEEB] mt-1 leading-none">{{ $orderCounts['active'] }}</p>
                         <p class="text-[10px] text-gray-400 mt-1.5">orders in progress</p>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-[#87CEEB]/15 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -286,7 +286,7 @@
                 <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-5 flex items-start justify-between group hover:shadow-2xl hover:border-[#FFD700]/30 transition-all duration-300">
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pending</p>
-                        <p class="text-3xl font-black text-[#FFD700] mt-1 leading-none">{{ $activeOrders->where('status', 'pending_approval')->count() }}</p>
+                        <p class="text-3xl font-black text-[#FFD700] mt-1 leading-none">{{ $orderCounts['pending'] }}</p>
                         <p class="text-[10px] text-gray-400 mt-1.5">awaiting approval</p>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-[#FFD700]/15 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -296,7 +296,7 @@
                 <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-5 flex items-start justify-between group hover:shadow-2xl hover:border-emerald-300/30 transition-all duration-300">
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Ready</p>
-                        <p class="text-3xl font-black text-emerald-500 mt-1 leading-none">{{ $activeOrders->where('status', 'ready_for_pickup')->count() }}</p>
+                        <p class="text-3xl font-black text-emerald-500 mt-1 leading-none">{{ $orderCounts['ready'] }}</p>
                         <p class="text-[10px] text-gray-400 mt-1.5">ready for pickup</p>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -306,7 +306,7 @@
                 <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-5 flex items-start justify-between group hover:shadow-2xl hover:border-purple-300/30 transition-all duration-300">
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Completed</p>
-                        <p class="text-3xl font-black text-purple-500 mt-1 leading-none">{{ $pastOrders->where('status', 'collected')->count() }}</p>
+                        <p class="text-3xl font-black text-purple-500 mt-1 leading-none">{{ $orderCounts['completed'] }}</p>
                         <p class="text-[10px] text-gray-400 mt-1.5">total completed</p>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-purple-500/15 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -322,8 +322,8 @@
                 <h3 class="text-lg font-bold text-[#4682B4] flex items-center gap-2">
                     <svg class="w-5 h-5 text-[#87CEEB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     Active Orders
-                    @if($activeOrders->count())
-                        <span class="text-[10px] font-bold bg-[#87CEEB]/15 text-[#4682B4] px-2.5 py-0.5 rounded-full">{{ $activeOrders->count() }}</span>
+                    @if($orderCounts['active'])
+                        <span class="text-[10px] font-bold bg-[#87CEEB]/15 text-[#4682B4] px-2.5 py-0.5 rounded-full">{{ $orderCounts['active'] }}</span>
                     @endif
                 </h3>
             </div>
@@ -469,7 +469,7 @@
      ╚══════════════════════════════════════════════════════════════════╝ --}}
 
 {{-- ── B1: Mobile Hero Header (fixed top, gradient) ───────────────── --}}
-<header class="fixed top-0 left-0 right-0 z-30 bg-gradient-to-r from-[#87CEEB] to-sky-400 shadow-lg lg:hidden">
+<header x-ref="mobileHeader" class="fixed top-0 left-0 right-0 z-30 bg-gradient-to-r from-[#87CEEB] to-sky-400 shadow-lg lg:hidden">
     <div class="flex items-center justify-between px-5 py-4">
         <div class="min-w-0">
             <p class="text-white/70 text-xs font-medium">Good {{ now()->hour < 12 ? 'morning' : (now()->hour < 18 ? 'afternoon' : 'evening') }},</p>
@@ -491,19 +491,19 @@
     {{-- Quick Stats --}}
     <div class="flex items-center gap-4 px-5 pb-4 -mt-1">
         <div class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-white/80 {{ $activeOrders->count() > 0 ? 'animate-pulse' : '' }}"></span>
-            <span class="text-white/90 text-xs font-semibold">{{ $activeOrders->count() }} Active</span>
+            <span class="w-2 h-2 rounded-full bg-white/80 {{ $orderCounts['active'] > 0 ? 'animate-pulse' : '' }}"></span>
+            <span class="text-white/90 text-xs font-semibold">{{ $orderCounts['active'] }} Active</span>
         </div>
-        @if($activeOrders->where('status', 'ready_for_pickup')->count() > 0)
+        @if($orderCounts['ready'] > 0)
         <div class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
-            <span class="text-white/90 text-xs font-semibold">{{ $activeOrders->where('status', 'ready_for_pickup')->count() }} Ready</span>
+            <span class="text-white/90 text-xs font-semibold">{{ $orderCounts['ready'] }} Ready</span>
         </div>
         @endif
-        @if($activeOrders->where('status', 'pending_approval')->count() > 0)
+        @if($orderCounts['pending'] > 0)
         <div class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-amber-300"></span>
-            <span class="text-white/90 text-xs font-semibold">{{ $activeOrders->where('status', 'pending_approval')->count() }} Pending</span>
+            <span class="text-white/90 text-xs font-semibold">{{ $orderCounts['pending'] }} Pending</span>
         </div>
         @endif
     </div>
@@ -518,13 +518,14 @@
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0 -translate-y-2"
      @click.away="showMobileMenu = false"
-     class="fixed top-[108px] right-4 z-40 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden lg:hidden">
+    class="fixed right-4 z-40 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden lg:hidden"
+    :style="{ top: mobileHeaderOffset + 'px' }">
     <div class="px-4 py-3 border-b border-gray-100">
         <p class="text-sm font-bold text-gray-800 truncate">{{ Auth::user()->name }}</p>
         <p class="text-[11px] text-gray-400 truncate">{{ Auth::user()->email }}</p>
     </div>
     <div class="py-1.5">
-        <a href="#my-orders"
+        <a href="#mobile-my-orders"
            @click.prevent="scrollToOrders(); showMobileMenu = false"
            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 active:bg-gray-50 transition-colors min-h-12">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
@@ -545,7 +546,7 @@
 </div>
 
 {{-- ── B3: Mobile Main Content ────────────────────────────────────── --}}
-<main class="lg:hidden pt-[120px] pb-28 px-4">
+<main class="lg:hidden pb-28 px-4" :style="{ paddingTop: mobileMainPadding + 'px' }">
 
     <div id="mobile-my-orders" x-ref="mobileOrdersSection" class="scroll-mt-[140px]"></div>
 
@@ -598,7 +599,7 @@
     @else
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-base font-bold text-slate-700">Active Orders</h2>
-            <span class="text-xs font-bold text-[#87CEEB] bg-[#87CEEB]/10 px-2.5 py-1 rounded-full">{{ $activeOrders->count() }}</span>
+            <span class="text-xs font-bold text-[#87CEEB] bg-[#87CEEB]/10 px-2.5 py-1 rounded-full">{{ $orderCounts['active'] }}</span>
         </div>
 
         <div class="space-y-4">
@@ -894,6 +895,7 @@ function customerDashboard() {
     return {
         showMobileMenu: false,
         showRequestModal: false,
+        mobileHeaderHeight: 120,
         form: {
             weight: '',
             services: [],
@@ -901,11 +903,29 @@ function customerDashboard() {
             reference: '',
             instructions: '',
         },
-        prices: @js([
-            'wash' => (float) $settings->wash_price,
-            'dry' => (float) $settings->dry_price,
-            'fold' => (float) $settings->fold_price,
-        ]),
+        prices: JSON.parse(document.getElementById('pricing-data').textContent),
+        get mobileHeaderOffset() {
+            return this.mobileHeaderHeight + 8;
+        },
+        get mobileMainPadding() {
+            return this.mobileHeaderHeight + 16;
+        },
+        init() {
+            this.updateMobileHeaderHeight();
+            this.$nextTick(() => this.updateMobileHeaderHeight());
+            window.addEventListener('resize', () => this.updateMobileHeaderHeight());
+        },
+        updateMobileHeaderHeight() {
+            if (window.innerWidth >= 1024) return;
+
+            const headerEl = this.$refs.mobileHeader;
+            if (!headerEl) return;
+
+            const measuredHeight = headerEl.offsetHeight;
+            if (measuredHeight > 0) {
+                this.mobileHeaderHeight = measuredHeight;
+            }
+        },
         get estimatedPrice() {
             if (!this.form.weight || this.form.services.length === 0) return 0;
             let total = 0;
@@ -926,7 +946,7 @@ function customerDashboard() {
             const element = target || fallback;
             if (!element) return;
 
-            const offset = isDesktop ? 88 : 132;
+            const offset = isDesktop ? 88 : this.mobileMainPadding + 8;
             const y = element.getBoundingClientRect().top + window.pageYOffset - offset;
 
             window.scrollTo({
@@ -937,6 +957,11 @@ function customerDashboard() {
     };
 }
 </script>
+<script type="application/json" id="pricing-data">{!! json_encode([
+    'wash' => (float) $settings->wash_price,
+    'dry' => (float) $settings->dry_price,
+    'fold' => (float) $settings->fold_price,
+], JSON_THROW_ON_ERROR) !!}</script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>

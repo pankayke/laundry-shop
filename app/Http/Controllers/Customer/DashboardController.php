@@ -25,8 +25,15 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
+        $orderCounts = [
+            'active' => $activeOrders->count(),
+            'pending' => $activeOrders->where('status', 'pending_approval')->count(),
+            'ready' => $activeOrders->where('status', 'ready_for_pickup')->count(),
+            'completed' => $pastOrders->where('status', 'collected')->count(),
+        ];
+
         $settings = Setting::instance();
 
-        return view('customer.dashboard', compact('activeOrders', 'pastOrders', 'settings'));
+        return view('customer.dashboard', compact('activeOrders', 'pastOrders', 'orderCounts', 'settings'));
     }
 }

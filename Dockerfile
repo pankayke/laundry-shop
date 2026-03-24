@@ -91,6 +91,7 @@ RUN chmod +x /entrypoint.sh
 
 # Create required directories and set permissions
 RUN mkdir -p \
+    /var/data \
     storage/app/public \
     storage/framework/cache/data \
     storage/framework/sessions \
@@ -99,10 +100,12 @@ RUN mkdir -p \
     bootstrap/cache \
     database \
     && chown -R www-data:www-data \
+    /var/data \
     storage \
     bootstrap/cache \
     database \
     && chmod -R 775 \
+    /var/data \
     storage \
     bootstrap/cache \
     database

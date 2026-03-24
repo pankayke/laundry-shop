@@ -8,14 +8,31 @@ cd /var/www/html
 # Always create .env — Render injects env vars into the OS environment,
 # but artisan commands need a .env file to exist.
 echo "==> Preparing .env file..."
+
+# Normalize APP_URL for Render environments.
+# - If APP_URL is a bare hostname, prepend https://
+# - If APP_URL is empty, derive from Render-provided host vars when available
+APP_URL_VALUE="${APP_URL:-}"
+if [ -z "$APP_URL_VALUE" ]; then
+    if [ -n "${RENDER_EXTERNAL_URL:-}" ]; then
+        APP_URL_VALUE="$RENDER_EXTERNAL_URL"
+    elif [ -n "${RENDER_EXTERNAL_HOSTNAME:-}" ]; then
+        APP_URL_VALUE="https://${RENDER_EXTERNAL_HOSTNAME}"
+    else
+        APP_URL_VALUE="http://localhost"
+    fi
+elif ! echo "$APP_URL_VALUE" | grep -qE '^https?://'; then
+    APP_URL_VALUE="https://${APP_URL_VALUE}"
+fi
+
 {
     echo "APP_NAME=\"${APP_NAME:-GeloWash}\""
     echo "APP_ENV=${APP_ENV:-production}"
     echo "APP_DEBUG=${APP_DEBUG:-false}"
-    echo "APP_URL=${APP_URL:-http://localhost}"
+    echo "APP_URL=${APP_URL_VALUE}"
     echo "APP_KEY=${APP_KEY:-}"
     echo "DB_CONNECTION=${DB_CONNECTION:-sqlite}"
-    echo "DB_DATABASE=${DB_DATABASE:-/var/www/html/database/database.sqlite}"
+    echo "DB_DATABASE=${DB_DATABASE:-/var/data/database.sqlite}"
     echo "SESSION_DRIVER=${SESSION_DRIVER:-database}"
     echo "CACHE_STORE=${CACHE_STORE:-database}"
     echo "QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}"
@@ -31,7 +48,7 @@ echo "==> .env created with above values."
 
 # Create SQLite database if using SQLite and it doesn't exist
 if [ "${DB_CONNECTION}" = "sqlite" ]; then
-    DB_PATH="${DB_DATABASE:-/var/www/html/database/database.sqlite}"
+    DB_PATH="${DB_DATABASE:-/var/data/database.sqlite}"
     if [ ! -f "$DB_PATH" ]; then
         echo "==> Creating SQLite database at $DB_PATH..."
         mkdir -p "$(dirname "$DB_PATH")"
@@ -83,7 +100,10 @@ echo "==> Linking storage..."
 php artisan storage:link --force 2>/dev/null || true
 
 # Ensure correct permissions after all operations
-chown -R www-data:www-data storage bootstrap/cache database
+chown -R www-data:www-data storage bootstrap/cache
+if [ -d /var/data ]; then
+    chown -R www-data:www-data /var/data
+fi
 
 echo "==> Application ready! Starting services..."
 
