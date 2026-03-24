@@ -151,11 +151,11 @@
 <div class="hidden lg:flex lg:ml-64 lg:mr-80 lg:items-start pt-16 min-h-screen">
 
 {{-- ── A3: Desktop Right Utility Pane (w-80, sticky on lg+) ───────── --}}
-<aside class="hidden lg:block w-80 shrink-0 p-5 order-last" aria-label="Utility pane">
-    <div class="space-y-5 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:z-10">
+<aside class="hidden lg:block w-80 shrink-0 p-4 order-last" aria-label="Utility pane">
+    <div class="space-y-4 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:z-10">
 
     {{-- Shop Details --}}
-    <div class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-5">
+    <div class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-4">
         <h4 class="text-sm font-bold text-[#4682B4] mb-3 flex items-center gap-2">
             <svg class="w-4 h-4 text-[#87CEEB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
             Shop Details
@@ -181,17 +181,17 @@
     </div>
 
     {{-- GCash QR --}}
-    <div class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-5">
+    <div class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-4">
         <h4 class="text-sm font-bold text-[#4682B4] mb-3 flex items-center gap-2">
             <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
             Pay Online
         </h4>
         @if($settings->qr_code_path)
-            <div class="w-full aspect-square bg-white rounded-xl flex items-center justify-center p-3 mb-3 border border-gray-200/50">
+            <div class="w-full h-32 bg-white rounded-xl flex items-center justify-center p-3 mb-3 border border-gray-200/50">
                 <img src="{{ asset('storage/' . $settings->qr_code_path) }}" alt="GCash QR Code" class="w-full h-full object-contain">
             </div>
         @else
-            <div class="w-full h-40 bg-gray-50 rounded-xl flex flex-col items-center justify-center mb-3 border-2 border-dashed border-gray-200">
+            <div class="w-full h-32 bg-gray-50 rounded-xl flex flex-col items-center justify-center mb-3 border-2 border-dashed border-gray-200">
                 <svg class="w-8 h-8 text-gray-300 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                 <p class="text-[10px] text-gray-400">QR Code not set</p>
             </div>
@@ -211,7 +211,7 @@
     </div>
 
     {{-- Pricing Table --}}
-    <div class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-5">
+    <div class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-4">
         <h4 class="text-sm font-bold text-[#4682B4] mb-3 flex items-center gap-2">
             <svg class="w-4 h-4 text-[#FFD700]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
             Service Rates
@@ -524,7 +524,7 @@
         <p class="text-[11px] text-gray-400 truncate">{{ Auth::user()->email }}</p>
     </div>
     <div class="py-1.5">
-        <a href="{{ route('customer.dashboard') }}#my-orders"
+        <a href="#my-orders"
            @click.prevent="scrollToOrders(); showMobileMenu = false"
            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 active:bg-gray-50 transition-colors min-h-12">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
@@ -546,6 +546,8 @@
 
 {{-- ── B3: Mobile Main Content ────────────────────────────────────── --}}
 <main class="lg:hidden pt-[120px] pb-28 px-4">
+
+    <div id="mobile-my-orders" x-ref="mobileOrdersSection" class="scroll-mt-[140px]"></div>
 
     {{-- Flash Messages (mobile) --}}
     @if(session('success'))
@@ -594,8 +596,6 @@
             </button>
         </div>
     @else
-        <div x-ref="mobileOrdersSection" class="scroll-mt-[140px]"></div>
-
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-base font-bold text-slate-700">Active Orders</h2>
             <span class="text-xs font-bold text-[#87CEEB] bg-[#87CEEB]/10 px-2.5 py-1 rounded-full">{{ $activeOrders->count() }}</span>
@@ -914,21 +914,25 @@ function customerDashboard() {
             return total;
         },
         scrollToOrders() {
-            // Try refs first (Alpine approach)
-            const target = window.innerWidth >= 1024
+            const isDesktop = window.innerWidth >= 1024;
+            const target = isDesktop
                 ? this.$refs.desktopOrdersSection
                 : this.$refs.mobileOrdersSection;
 
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                return;
-            }
+            const fallback = isDesktop
+                ? document.getElementById('my-orders')
+                : document.getElementById('mobile-my-orders');
 
-            // Fallback: use native ID-based scroll
-            const element = document.getElementById('my-orders');
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            const element = target || fallback;
+            if (!element) return;
+
+            const offset = isDesktop ? 88 : 132;
+            const y = element.getBoundingClientRect().top + window.pageYOffset - offset;
+
+            window.scrollTo({
+                top: Math.max(0, y),
+                behavior: 'smooth',
+            });
         }
     };
 }
