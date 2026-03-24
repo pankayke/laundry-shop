@@ -62,7 +62,7 @@
             Dashboard
         </a>
 
-          <a href="#my-orders"
+          <a href="#order-history-anchor"
               @click="scrollToOrders()"
            class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-500 hover:bg-white/40 hover:text-[#4682B4] transition-all duration-200">
             <div class="w-8 h-8 rounded-xl bg-gray-100/60 flex items-center justify-center">
@@ -421,6 +421,8 @@
             @endif
         </section>
 
+        <div id="order-history-anchor" x-ref="desktopOrderHistorySection" class="scroll-mt-24"></div>
+
         {{-- Order History Table --}}
         @if($pastOrders->isNotEmpty())
         <section>
@@ -525,7 +527,7 @@
         <p class="text-[11px] text-gray-400 truncate">{{ Auth::user()->email }}</p>
     </div>
     <div class="py-1.5">
-          <a href="#mobile-my-orders"
+          <a href="#mobile-order-history-anchor"
               @click="scrollToOrders(); showMobileMenu = false"
            class="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 active:bg-gray-50 transition-colors min-h-12">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
@@ -682,6 +684,8 @@
             @endforeach
         </div>
     @endif
+
+    <div id="mobile-order-history-anchor" x-ref="mobileOrderHistorySection" class="scroll-mt-[140px]"></div>
 
     {{-- Past Orders (mobile) --}}
     @if($pastOrders->isNotEmpty())
@@ -936,12 +940,12 @@ function customerDashboard() {
         scrollToOrders() {
             const isDesktop = window.innerWidth >= 1024;
             const target = isDesktop
-                ? this.$refs.desktopOrdersSection
-                : this.$refs.mobileOrdersSection;
+                ? (this.$refs.desktopOrderHistorySection || this.$refs.desktopOrdersSection)
+                : (this.$refs.mobileOrderHistorySection || this.$refs.mobileOrdersSection);
 
             const fallback = isDesktop
-                ? document.getElementById('my-orders')
-                : document.getElementById('mobile-my-orders');
+                ? (document.getElementById('order-history-anchor') || document.getElementById('my-orders'))
+                : (document.getElementById('mobile-order-history-anchor') || document.getElementById('mobile-my-orders'));
 
             const element = target || fallback;
             if (!element) return;
