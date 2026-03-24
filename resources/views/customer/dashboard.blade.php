@@ -329,17 +329,128 @@
             </div>
 
             @if($activeOrders->isEmpty())
-                <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-12 text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#87CEEB]/20 to-sky-100/40 flex items-center justify-center">
-                        <svg class="w-8 h-8 text-[#87CEEB]/60" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <div class="space-y-8">
+                    {{-- Welcome Section --}}
+                    <div class="bg-gradient-to-br from-white/60 via-blue-50/40 to-white/40 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl p-12 text-center">
+                        <div class="mb-8 inline-block">
+                            <div class="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-[#87CEEB]/20 via-sky-100/30 to-white/20 flex items-center justify-center shadow-xl shadow-sky-200/20">
+                                <svg class="w-12 h-12 text-[#87CEEB]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            </div>
+                        </div>
+                        <h2 class="text-2xl font-black text-[#4682B4] mb-2">Ready for Fresh Laundry?</h2>
+                        <p class="text-gray-500 text-sm mb-2">No active orders yet. Start your first laundry request now!</p>
+                        <p class="text-xs text-gray-400 mb-8">We'll handle the washing, drying, and folding while you focus on what matters.</p>
+                        <button @click="showRequestModal = true"
+                                class="inline-flex items-center gap-2 px-8 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-[#87CEEB] to-sky-500 rounded-2xl shadow-xl shadow-sky-200/50 hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 group">
+                            <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round"/></svg>
+                            Submit Your First Request
+                        </button>
                     </div>
-                    <p class="text-sm font-semibold text-gray-500">No active orders</p>
-                    <p class="text-xs text-gray-400 mt-1 mb-5">Submit a new laundry request to get started.</p>
-                    <button @click="showRequestModal = true"
-                            class="inline-flex items-center gap-1.5 px-6 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-[#87CEEB] to-sky-600 rounded-2xl shadow-lg shadow-sky-200/40 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
-                        Submit Request
-                    </button>
+
+                    {{-- Feature Cards Grid --}}
+                    <div class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-5">
+                        {{-- Quick Start Tips --}}
+                        <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6 hover:shadow-2xl hover:border-emerald-300/20 transition-all duration-300">
+                            <div class="flex items-start gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-100/60 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">Quick & Easy</h3>
+                                    <p class="text-xs text-gray-500 mt-1">Fill in weight, select services, choose payment — done in seconds!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Service Info --}}
+                        <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6 hover:shadow-2xl hover:border-[#87CEEB]/20 transition-all duration-300">
+                            <div class="flex items-start gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-[#87CEEB]/15 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-[#4682B4]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" stroke-linecap="round"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">Flexible Services</h3>
+                                    <p class="text-xs text-gray-500 mt-1">Choose Wash, Dry, or Fold individually based on your needs.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Transparent Pricing --}}
+                        <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6 hover:shadow-2xl hover:border-[#FFD700]/20 transition-all duration-300">
+                            <div class="flex items-start gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-[#FFD700]/15 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-[#FFD700]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">Fair Pricing</h3>
+                                    <p class="text-xs text-gray-500 mt-1">See estimated cost before submitting. No hidden fees.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Track Progress --}}
+                        <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6 hover:shadow-2xl hover:border-purple-300/20 transition-all duration-300">
+                            <div class="flex items-start gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-100/60 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">Live Updates</h3>
+                                    <p class="text-xs text-gray-500 mt-1">Track your order status from pending to ready for pickup.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Multiple Payment --}}
+                        <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6 hover:shadow-2xl hover:border-amber-300/20 transition-all duration-300">
+                            <div class="flex items-start gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-100/60 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">Easy Payment</h3>
+                                    <p class="text-xs text-gray-500 mt-1">Pay with Cash, GCash, or Maya — your choice!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Personal Notes --}}
+                        <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-6 hover:shadow-2xl hover:border-pink-300/20 transition-all duration-300">
+                            <div class="flex items-start gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-pink-100/60 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2h-3l-4 4z" stroke-linecap="round"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">Special Notes</h3>
+                                    <p class="text-xs text-gray-500 mt-1">Add specific instructions like "separate colors" or delicate items.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- How It Works Timeline --}}
+                    <div class="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl p-8">
+                        <h3 class="text-lg font-bold text-[#4682B4] mb-6 text-center">How GeloWash Works</h3>
+                        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+                            @foreach([
+                                ['Submit', 'Create your request with weight, services & payment method', '1️⃣'],
+                                ['Confirm', 'We\'ll review and approve your order quickly', '✅'],
+                                ['Process', 'Our team washes, dries, and folds with care', '🧺'],
+                                ['Pickup', 'Collect your fresh laundry at your convenience', '📦']
+                            ] as [$step, $desc, $icon])
+                            <div class="relative flex flex-col items-center text-center">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#87CEEB]/20 to-sky-100/20 flex items-center justify-center text-3xl mb-3 border border-[#87CEEB]/30 shadow-lg">
+                                    {{ $icon }}
+                                </div>
+                                <h4 class="font-bold text-gray-800 mb-1.5">{{ $step }}</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">{{ $desc }}</p>
+                                @if(!$loop->last)
+                                    <div class="absolute -right-3 top-7 hidden xl:block text-[#87CEEB]/40 text-2xl">→</div>
+                                @endif
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
             @else
                 <div class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-5">
@@ -577,26 +688,91 @@
 
     {{-- Active Orders --}}
     @if($activeOrders->isEmpty())
-        {{-- Empty State --}}
-        <div class="flex flex-col items-center justify-center text-center py-24 px-6">
-            <div class="w-32 h-32 mb-6 text-gray-200">
-                <svg viewBox="0 0 120 120" fill="none" class="w-full h-full">
-                    <circle cx="60" cy="65" r="40" stroke="currentColor" stroke-width="3" stroke-dasharray="6 4"/>
-                    <circle cx="60" cy="65" r="20" fill="currentColor" opacity="0.15"/>
-                    <rect x="35" y="20" width="50" height="20" rx="10" fill="currentColor" opacity="0.25"/>
-                    <circle cx="48" cy="30" r="3" fill="currentColor" opacity="0.4"/>
-                    <circle cx="60" cy="30" r="3" fill="currentColor" opacity="0.4"/>
-                    <circle cx="72" cy="30" r="3" fill="currentColor" opacity="0.4"/>
-                    <path d="M45 65 C50 55, 70 55, 75 65" stroke="currentColor" stroke-width="2" opacity="0.3"/>
-                    <path d="M50 70 C55 62, 65 62, 70 70" stroke="currentColor" stroke-width="2" opacity="0.3"/>
-                </svg>
+        {{-- Empty State with Features --}}
+        <div class="space-y-6 pb-4">
+            {{-- Main CTA --}}
+            <div class="bg-gradient-to-br from-[#87CEEB]/15 via-white/60 to-sky-50/40 rounded-3xl border border-[#87CEEB]/30 shadow-lg p-8 text-center">
+                <div class="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-[#87CEEB]/25 to-sky-100/40 flex items-center justify-center border border-[#87CEEB]/20 shadow-lg">
+                    <svg class="w-10 h-10 text-[#87CEEB]" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round"/></svg>
+                </div>
+                <h2 class="text-2xl font-black text-[#4682B4] mb-2">Start Your Laundry!</h2>
+                <p class="text-sm text-gray-600 mb-1">Submit your first request in seconds</p>
+                <p class="text-xs text-gray-400 mb-6">We'll take care of washing, drying, and folding</p>
+                <button @click="showRequestModal = true"
+                        class="w-full bg-gradient-to-r from-[#87CEEB] to-sky-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-sky-200/50 active:scale-95 transition-transform">
+                    + New Request
+                </button>
             </div>
-            <h2 class="text-xl font-bold text-slate-700 mb-1">No laundry yet</h2>
-            <p class="text-sm text-slate-400 mb-8">Tap <span class="font-bold text-[#87CEEB]">+</span> to submit your first request</p>
-            <button @click="showRequestModal = true"
-                    class="w-full max-w-xs bg-gradient-to-r from-[#87CEEB] to-sky-500 text-white font-bold text-base py-4 rounded-2xl shadow-lg shadow-sky-200/50 active:scale-[0.98] transition-transform min-h-12">
-                + New Request
-            </button>
+
+            {{-- Feature Cards Grid (2-column) --}}
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/50 shadow-md p-4 text-center hover:shadow-lg transition-shadow">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-emerald-100/60 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round"/></svg>
+                    </div>
+                    <p class="text-xs font-bold text-gray-700">Quick & Easy</p>
+                    <p class="text-[11px] text-gray-500 mt-1">Done in seconds</p>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/50 shadow-md p-4 text-center hover:shadow-lg transition-shadow">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-[#87CEEB]/15 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-[#4682B4]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" stroke-linecap="round"/></svg>
+                    </div>
+                    <p class="text-xs font-bold text-gray-700">All Services</p>
+                    <p class="text-[11px] text-gray-500 mt-1">Wash, Dry, Fold</p>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/50 shadow-md p-4 text-center hover:shadow-lg transition-shadow">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-[#FFD700]/15 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-[#FFD700]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"/></svg>
+                    </div>
+                    <p class="text-xs font-bold text-gray-700">Fair Price</p>
+                    <p class="text-[11px] text-gray-500 mt-1">See before submit</p>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/50 shadow-md p-4 text-center hover:shadow-lg transition-shadow">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-purple-100/60 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"/></svg>
+                    </div>
+                    <p class="text-xs font-bold text-gray-700">Track Status</p>
+                    <p class="text-[11px] text-gray-500 mt-1">Live updates</p>
+                </div>
+            </div>
+
+            {{-- How It Works --}}
+            <div class="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/50 shadow-md p-5">
+                <h3 class="text-sm font-bold text-[#4682B4] mb-4">How It Works</h3>
+                <div class="space-y-3">
+                    <div class="flex gap-3">
+                        <div class="flex items-center justify-center w-7 h-7 rounded-full bg-[#87CEEB]/20 text-[#4682B4] font-bold text-sm shrink-0">1</div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-700">Submit Request</p>
+                            <p class="text-[11px] text-gray-500">Tell us weight &amp; services</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex items-center justify-center w-7 h-7 rounded-full bg-[#87CEEB]/20 text-[#4682B4] font-bold text-sm shrink-0">2</div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-700">We Review</p>
+                            <p class="text-[11px] text-gray-500">Quick approval &amp; confirmation</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex items-center justify-center w-7 h-7 rounded-full bg-[#87CEEB]/20 text-[#4682B4] font-bold text-sm shrink-0">3</div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-700">We Process It</p>
+                            <p class="text-[11px] text-gray-500">Wash, dry, &amp; fold with care</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex items-center justify-center w-7 h-7 rounded-full bg-[#87CEEB]/20 text-[#4682B4] font-bold text-sm shrink-0">4</div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-700">Ready for Pickup</p>
+                            <p class="text-[11px] text-gray-500">Collect fresh laundry</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     @else
         <div class="flex items-center justify-between mb-4">
