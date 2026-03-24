@@ -17,32 +17,32 @@
     <link rel="manifest" href="/manifest.json">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-blue-50/80 to-indigo-50 min-h-screen font-sans antialiased flex flex-col lg:flex-row gap-4 lg:gap-5 p-4 lg:p-5 xl:p-6"
+<body class="bg-gradient-to-br from-slate-50 via-blue-50/80 to-indigo-50 min-h-screen font-sans antialiased"
       x-data="customerDashboard()" x-cloak>
 
 {{-- ╔══════════════════════════════════════════════════════════════════╗
-     ║  SECTION A — LEFT SIDEBAR (converted from fixed to flex layout) ║
+     ║  SECTION A — DESKTOP LAYOUT (hidden below lg:)                  ║
      ╚══════════════════════════════════════════════════════════════════╝ --}}
 
-{{-- ── A1: Flexible Left Sidebar (w-64 → w-56 on xl for more space) ──── --}}
-<aside class="hidden lg:flex lg:flex-col lg:w-56 xl:w-60 flex-shrink-0 bg-white/40 backdrop-blur-xl border border-white/50 rounded-2xl shadow-lg p-4 lg:p-5 h-fit lg:sticky lg:top-5 lg:self-start"
+{{-- ── A1: Fixed Left Sidebar (w-64) ──────────────────────────────── --}}
+<aside class="fixed left-0 top-0 h-screen w-64 bg-white/40 backdrop-blur-xl border-r border-white/50 z-40 shadow-2xl hidden lg:flex lg:flex-col"
        aria-label="Sidebar navigation">
 
     {{-- Brand --}}
-    <div class="pb-4 border-b border-white/30 mb-4">
-        <a href="/" class="flex items-center gap-2.5 group">
-            <div class="w-9 h-9 bg-gradient-to-br from-[#87CEEB] to-[#FFD700] rounded-xl flex items-center justify-center shadow-lg shadow-sky-200/40 transition-transform group-hover:scale-105 shrink-0">
-                <svg viewBox="0 0 24 24" class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div class="px-6 py-6 border-b border-white/30">
+        <a href="/" class="flex items-center gap-3 group">
+            <div class="w-11 h-11 bg-gradient-to-br from-[#87CEEB] to-[#FFD700] rounded-2xl flex items-center justify-center shadow-lg shadow-sky-200/40 transition-transform group-hover:scale-105">
+                <svg viewBox="0 0 24 24" class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="14" r="7"/><circle cx="12" cy="14" r="3"/>
                     <path d="M7 4h10a2 2 0 012 2v2H5V6a2 2 0 012-2z"/>
                     <circle cx="9" cy="6" r="0.8" fill="currentColor"/><circle cx="12" cy="6" r="0.8" fill="currentColor"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <h1 class="text-base font-black tracking-tight leading-tight">
+            <div>
+                <h1 class="text-xl font-black tracking-tight">
                     <span class="bg-gradient-to-r from-[#87CEEB] to-[#4682B4] bg-clip-text text-transparent italic">Gelo</span><span class="bg-gradient-to-r from-[#4682B4] to-[#FFD700] bg-clip-text text-transparent">Wash</span>
                 </h1>
-                <p class="text-[8px] text-[#4682B4]/70 font-medium tracking-widest uppercase -mt-0.5">Shop</p>
+                <p class="text-[10px] text-[#4682B4]/70 font-medium tracking-widest uppercase -mt-0.5">Laundry Shop</p>
             </div>
         </a>
     </div>
@@ -52,14 +52,14 @@
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">Menu</p>
 
         <a href="{{ route('customer.dashboard') }}"
-           class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200
-                  {{ request()->routeIs('customer.dashboard') ? 'bg-[#87CEEB]/15 text-[#4682B4] shadow-sm' : 'text-gray-500 hover:bg-white/40 hover:text-[#4682B4]' }}">
-            <div class="w-7 h-7 rounded-lg {{ request()->routeIs('customer.dashboard') ? 'bg-[#87CEEB]/20' : 'bg-gray-100/60' }} flex items-center justify-center transition-colors shrink-0">
-                <svg class="w-4 h-4 {{ request()->routeIs('customer.dashboard') ? 'text-[#87CEEB]' : 'text-gray-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+           class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200
+                  {{ request()->routeIs('customer.dashboard') ? 'bg-[#87CEEB]/15 text-[#4682B4] border-r-[3px] border-[#87CEEB] shadow-sm' : 'text-gray-500 hover:bg-white/40 hover:text-[#4682B4]' }}">
+            <div class="w-8 h-8 rounded-xl {{ request()->routeIs('customer.dashboard') ? 'bg-[#87CEEB]/20' : 'bg-gray-100/60' }} flex items-center justify-center transition-colors">
+                <svg class="w-[18px] h-[18px] {{ request()->routeIs('customer.dashboard') ? 'text-[#87CEEB]' : 'text-gray-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/>
                 </svg>
             </div>
-            <span class="truncate">Dashboard</span>
+            Dashboard
         </a>
 
           <a href="#order-history-anchor"
@@ -90,15 +90,17 @@
             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">Account</p>
         </div>
 
-        <span class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-400 cursor-default">
+        <button type="button"
+                @click="scrollToSettings()"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-500 hover:bg-white/40 hover:text-[#4682B4] transition-all duration-200 text-left">
             <div class="w-8 h-8 rounded-xl bg-gray-100/60 flex items-center justify-center">
-                <svg class="w-[18px] h-[18px] text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="w-[18px] h-[18px] text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                     <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
             </div>
             Settings
-        </span>
+        </button>
     </nav>
 
     {{-- User Card --}}
@@ -155,7 +157,7 @@
     <div class="space-y-3.5 lg:sticky lg:top-20 lg:self-start lg:max-h-none lg:overflow-visible lg:z-10">
 
     {{-- Shop Details --}}
-    <div class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-3.5">
+    <div id="shop-details-anchor" x-ref="shopDetailsSection" class="bg-white/50 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg p-3.5">
         <h4 class="text-sm font-bold text-[#4682B4] mb-3 flex items-center gap-2">
             <svg class="w-4 h-4 text-[#87CEEB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
             Shop Details
@@ -648,6 +650,12 @@
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             Track Order
         </a>
+        <button type="button"
+                @click="scrollToSettings(); showMobileMenu = false"
+                class="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-600 active:bg-gray-50 transition-colors min-h-12">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Settings
+        </button>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 active:bg-red-50 transition-colors min-h-12">
@@ -1127,6 +1135,19 @@ function customerDashboard() {
             if (!element) return;
 
             const offset = isDesktop ? 88 : this.mobileMainPadding + 8;
+            const y = element.getBoundingClientRect().top + window.pageYOffset - offset;
+
+            window.scrollTo({
+                top: Math.max(0, y),
+                behavior: 'smooth',
+            });
+        },
+        scrollToSettings() {
+            const element = this.$refs.shopDetailsSection || document.getElementById('shop-details-anchor');
+            if (!element) return;
+
+            const isDesktop = window.innerWidth >= 1024;
+            const offset = isDesktop ? 84 : this.mobileMainPadding + 8;
             const y = element.getBoundingClientRect().top + window.pageYOffset - offset;
 
             window.scrollTo({
